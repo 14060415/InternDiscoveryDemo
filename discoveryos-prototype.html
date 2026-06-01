@@ -1,0 +1,2353 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>DiscoveryOS · 科学发现平台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Noto+Serif+SC:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1a2332; --ink-soft:#3a4556; --ink-mute:#7a8394; --ink-faint:#a8afbb;
+  --paper:#fdfcf8; --paper-warm:#f7f4ec; --paper-cool:#fafaf7;
+  --rule:#e8e4d9; --rule-soft:#efece3; --rule-deep:#d4cdb6;
+  --sidebar-bg:#f6f4f0;
+  /* 0526 reference: 单一品牌色 = 青蓝 (#1661ab) 取代朱红 */
+  --vermilion-1:#f4f7fb; --vermilion-2:#dde7f4; --vermilion-3:#b8ceea;
+  --vermilion-4:#88addd; --vermilion-5:#5a8fc8; --vermilion-6:#1661ab; --vermilion-7:#0f4a85;
+  --vermilion:var(--vermilion-6);
+  --vermilion-soft:#5a8fc8;
+  --vermilion-bg:#e9f0f9;
+  --gold:#a8864b;
+  --success:#6b7a3a; --success-bg:#f1f3e8;
+  --warning:#a8864b; --warning-bg:#f8f1e3;
+  --error:#c03030; --rec-red:#e74c3c;
+  --ai-tint:#f5f8fc; --ai-tint-rule:#d8e4f3;
+  --font-sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Noto Sans SC','Microsoft YaHei',sans-serif;
+  --font-serif:'Cormorant Garamond','Noto Serif SC','Songti SC',serif;
+  --font-mono:'JetBrains Mono',ui-monospace,'SF Mono',monospace;
+  --font-cn-serif:'Noto Serif SC','Source Han Serif SC','Songti SC',serif;
+  --t-fast:.12s; --t-base:.15s; --t-mid:.22s; --t-slow:.35s;
+  --ease:cubic-bezier(.2,0,0,1);
+  --shadow-overlay:0 8px 24px rgba(0,0,0,.08);
+  --shadow-modal:0 20px 60px rgba(0,0,0,.12);
+  --shadow-focus:0 0 0 2px rgba(26,35,50,.12),0 1px 4px rgba(26,35,50,.08);
+  --shadow-card:0 2px 8px rgba(15,28,46,.06),0 0 0 1px rgba(22,97,171,.04);
+  --shadow-card-hover:0 8px 24px -12px rgba(22,97,171,.18);
+  --sb-w-open:180px;
+  --sb-w-collapsed:60px;
+  /* ── 辅助色 · 4 色相 × 5 阶 (v2.4 §1.1.5) ────────────────────────────
+     与主色 / 功能色错峰分布（≥25° 色环距离）：
+       vermilion 215° · success 70° · warning 35° · error 0°
+       → 辅助 mint 160° · cyan 185° · violet 270° · magenta 325°
+     角色：L1 极浅填充 · L2 暗色主题清晰点亮 / 浅色描边 · L3 Icon / 中度强调
+            L4 字体 / 深描边 · L5 最深强调
+     三主题共享同一色阶（不分 light/cool/dark）— 由组件按场景挑选阶位 */
+  --aux-mint-1:#e4f0ec; --aux-mint-2:#9bd5be; --aux-mint-3:#40bf95; --aux-mint-4:#259675; --aux-mint-5:#125c47;
+  --aux-cyan-1:#e4f0f0; --aux-cyan-2:#9bd0d5; --aux-cyan-3:#40b5bf; --aux-cyan-4:#258e96; --aux-cyan-5:#12575c;
+  --aux-violet-1:#ece4f0; --aux-violet-2:#be9bd5; --aux-violet-3:#8c40bf; --aux-violet-4:#6d2596; --aux-violet-5:#42125c;
+  --aux-magenta-1:#f0e4e9; --aux-magenta-2:#d59bb8; --aux-magenta-3:#bf4082; --aux-magenta-4:#962566; --aux-magenta-5:#5c123f;
+}
+
+/* ────────────────── Dark mode · 暖夜 (v2.2 §1.1.2) ────────────────── */
+[data-theme="dark"]{
+  --ink:#ebe6dc; --ink-soft:#b8b1a3; --ink-mute:#8a8478; --ink-faint:#5a554c;
+  --paper:#1a1815; --paper-warm:#252320; --paper-cool:#1f1d1a;
+  --rule:#3a3631; --rule-soft:#2c2924; --rule-deep:#4a4640;
+  --sidebar-bg:#1f1d1a;
+  /* Vermilion 7-stage (dark, H 214° preserved, lightness raised) */
+  --vermilion-1:#1a2538; --vermilion-2:#25344e; --vermilion-3:#2f4a72;
+  --vermilion-4:#3f6498; --vermilion-5:#5b88c2; --vermilion-6:#7aa5db; --vermilion-7:#a0c2e8;
+  --vermilion:var(--vermilion-6);
+  --vermilion-soft:#5b88c2;
+  --vermilion-bg:#25344e;
+  --gold:#d4ad6a;
+  --success:#a4b870; --success-bg:#232a1a;
+  --warning:#d4ad6a; --warning-bg:#2c2618;
+  --error:#e57878; --rec-red:#ec5f50;
+  --ai-tint:#1a2230; --ai-tint-rule:#2a3a52;
+  --shadow-overlay:0 8px 24px rgba(0,0,0,.40);
+  --shadow-modal:0 20px 60px rgba(0,0,0,.55);
+  --shadow-focus:0 0 0 2px rgba(235,230,220,.18),0 1px 4px rgba(0,0,0,.4);
+  --shadow-card:0 1px 2px rgba(0,0,0,.30),0 0 0 1px rgba(122,165,219,.06);
+  --shadow-card-hover:0 8px 24px -8px rgba(0,0,0,.55),0 4px 16px -10px rgba(122,165,219,.28);
+  color-scheme:dark;
+}
+
+/* ────────────────── Cool mode · 冷纸 (v2.3 §1.1.4) ────────────────── */
+[data-theme="cool"]{
+  --ink:#1a2332; --ink-soft:#3a4a60; --ink-mute:#6e7a8d; --ink-faint:#a3acba;
+  --paper:#fbfcfd; --paper-warm:#eef2f8; --paper-cool:#f5f7fa;
+  --rule:#dde3ec; --rule-soft:#e7ebf2; --rule-deep:#c8d2e0;
+  --sidebar-bg:#f5f7fa;
+  /* Vermilion identical to warm mode (品牌身份不分主题) */
+  --vermilion-1:#f4f7fb; --vermilion-2:#dde7f4; --vermilion-3:#b8ceea;
+  --vermilion-4:#88addd; --vermilion-5:#5a8fc8; --vermilion-6:#1661ab; --vermilion-7:#0f4a85;
+  --vermilion:var(--vermilion-6);
+  --vermilion-soft:#5a8fc8;
+  --vermilion-bg:#e9f0f9;
+  --gold:#a8864b;
+  --success:#6b7a3a; --success-bg:#f1f3e8;
+  --warning:#a8864b; --warning-bg:#f8f1e3;
+  --error:#c03030; --rec-red:#e74c3c;
+  --ai-tint:#f0f5fc; --ai-tint-rule:#cfdcf0;
+  --shadow-overlay:0 8px 24px rgba(20,30,50,.08);
+  --shadow-modal:0 20px 60px rgba(20,30,50,.12);
+  --shadow-focus:0 0 0 2px rgba(20,30,50,.14),0 1px 4px rgba(20,30,50,.08);
+  --shadow-card:0 2px 8px rgba(20,30,50,.06),0 0 0 1px rgba(22,97,171,.04);
+  --shadow-card-hover:0 8px 24px -12px rgba(22,97,171,.18);
+  color-scheme:light;
+}
+html{color-scheme:only light;scroll-behavior:smooth;}
+html[data-theme="dark"]{color-scheme:only dark;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:var(--font-sans);font-size:14px;line-height:1.55;
+  color:var(--ink);background:var(--paper);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;}
+a{color:inherit;text-decoration:none;}
+ul{list-style:none;}
+svg{display:block;}
+
+/* ────────────────── App shell ────────────────── */
+.app{
+  display:grid;
+  grid-template-columns:var(--sb-w-open) 1fr;
+  min-height:100vh;
+  transition:grid-template-columns var(--t-mid) var(--ease);
+}
+.app[data-collapsed="true"]{grid-template-columns:var(--sb-w-collapsed) 1fr;}
+
+/* ────────────────── Sidebar (expanded baseline) ────────────────── */
+.sidebar{
+  background:var(--sidebar-bg);
+  border-right:1px solid var(--rule);
+  display:flex;flex-direction:column;
+  padding:18px 10px;gap:24px;
+  position:sticky;top:0;height:100vh;
+  overflow-y:auto;overflow-x:hidden;
+  width:var(--sb-w-open);
+  transition:width var(--t-mid) var(--ease),padding var(--t-mid) var(--ease);
+}
+.sidebar::-webkit-scrollbar{width:4px;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--rule);border-radius:2px;}
+
+/* Header — expanded: logo left, toggle right */
+.sidebar-head{
+  display:flex;align-items:center;justify-content:space-between;
+  width:100%;flex-shrink:0;
+}
+.logo{
+  width:40px;height:40px;flex-shrink:0;
+  display:grid;place-items:center;
+  opacity:.9;
+  transition:width var(--t-mid) var(--ease),height var(--t-mid) var(--ease);
+}
+.logo img{
+  width:100%;height:100%;object-fit:contain;display:block;
+}
+.toggle-btn{
+  width:24px;height:24px;flex-shrink:0;
+  display:grid;place-items:center;
+  border-radius:2px;color:var(--ink-soft);
+  transition:background var(--t-fast) var(--ease),color var(--t-fast) var(--ease);
+  border:1px solid transparent;
+}
+.toggle-btn:hover{background:#fff;color:var(--ink);border-color:var(--rule);}
+.toggle-btn:focus-visible{box-shadow:var(--shadow-focus);outline:0;}
+
+/* Nav list */
+.nav-list{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  width:100%;
+}
+.nav-item{
+  display:flex;align-items:center;gap:8px;
+  padding:8px;border-radius:4px;
+  font-size:13px;color:#464a53;
+  width:100%;
+  cursor:pointer;user-select:none;
+  border:1px solid transparent;
+  background:transparent;
+  transition:background var(--t-fast) var(--ease),color var(--t-fast) var(--ease),border-color var(--t-fast) var(--ease);
+}
+.nav-item:hover{background:#fff;color:var(--ink);}
+.nav-item .icon{
+  flex-shrink:0;width:16px;height:16px;color:#464a53;
+  transition:color var(--t-fast) var(--ease);
+}
+.nav-item:hover .icon{color:var(--ink);}
+.nav-item.active{
+  background:#fff;border-color:#ebecf0;
+  border-radius:8px;
+  color:#1b3882;
+}
+.nav-item.active .icon{color:#1b3882;}
+
+.nav-divider{
+  height:1px;width:calc(100% + 0.62%);
+  background:var(--rule-soft);
+  margin:0;
+  flex-shrink:0;
+}
+
+/* History list (only expanded) */
+.nav-history{
+  display:flex;flex-direction:column;gap:12px;
+  padding:4px 0 4px 12px;
+  width:100%;
+}
+.history-item{
+  font-size:13px;color:rgba(18,19,22,.6);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  cursor:pointer;
+  transition:color var(--t-fast) var(--ease);
+}
+.history-item:hover{color:var(--ink);}
+.history-item.view-all{color:rgba(18,19,22,.8);font-weight:500;}
+
+/* Hover tooltip for history items — fixed-positioned to escape sidebar overflow */
+.history-tip{
+  position:fixed;
+  background:var(--paper-warm);
+  border:1px solid var(--rule);
+  border-radius:4px;
+  box-shadow:var(--shadow-overlay);
+  padding:12px 14px;
+  width:320px;
+  font:12.5px/1.65 var(--font-sans);
+  color:var(--ink-soft);
+  white-space:normal;
+  opacity:0;pointer-events:none;
+  transform:translate(-4px,-50%);
+  transition:opacity var(--t-fast) var(--ease),transform var(--t-fast) var(--ease);
+  z-index:200;
+}
+.history-tip.show{opacity:1;transform:translate(0,-50%);}
+
+/* Footer — expanded: avatar left, system right */
+.sidebar-foot{
+  margin-top:auto;
+  display:flex;align-items:center;justify-content:space-between;
+  padding-right:8px;
+  width:100%;flex-shrink:0;
+}
+.avatar{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,var(--vermilion-5),var(--vermilion-7));
+  color:#fff;display:grid;place-items:center;
+  font-size:13px;font-weight:500;
+  flex-shrink:0;
+}
+.system{display:flex;gap:16px;align-items:center;}
+.sys-btn{
+  position:relative;width:20px;height:20px;
+  color:#464a53;
+  transition:color var(--t-fast) var(--ease);
+  display:grid;place-items:center;
+}
+.sys-btn:hover{color:var(--ink);}
+[data-theme="dark"] .sys-btn{color:var(--ink-mute);}
+[data-theme="dark"] .sys-btn:hover{color:var(--ink);}
+/* Theme switcher — hover popover with 3 mode options */
+.theme-wrap{position:relative;display:inline-flex;align-items:center;}
+.theme-pop{
+  position:absolute;
+  bottom:calc(100% + 10px);
+  left:50%;
+  background:var(--paper-warm);
+  border:1px solid var(--rule);
+  border-radius:4px;
+  box-shadow:var(--shadow-overlay);
+  padding:4px;
+  display:flex;flex-direction:column;
+  gap:1px;
+  min-width:96px;
+  opacity:0;pointer-events:none;
+  transform:translate(-50%,4px);
+  transition:opacity var(--t-fast) var(--ease),transform var(--t-fast) var(--ease);
+  z-index:50;
+}
+.theme-wrap:hover .theme-pop,
+.theme-wrap:focus-within .theme-pop,
+.theme-pop:hover{
+  opacity:1;pointer-events:auto;
+  transform:translate(-50%,0);
+}
+.theme-opt{
+  display:block;width:100%;
+  font:13px var(--font-sans);
+  padding:6px 12px;
+  border-radius:2px;
+  background:transparent;color:var(--ink-soft);
+  text-align:left;
+  cursor:pointer;white-space:nowrap;
+  border:0;
+  transition:background var(--t-fast) var(--ease),color var(--t-fast) var(--ease);
+}
+.theme-opt:hover{background:var(--paper);color:var(--ink);}
+.theme-opt.active{color:var(--vermilion);font-weight:500;}
+.badge{
+  position:absolute;top:-3px;right:-5px;
+  min-width:12px;height:12px;padding:0 3px;
+  background:var(--rec-red);color:#fff;
+  font-size:8px;font-weight:500;line-height:12px;
+  border-radius:10px;text-align:center;
+  font-family:var(--font-mono);
+  border:1.5px solid var(--sidebar-bg);
+}
+
+/* ────────────────── Sidebar collapsed state ────────────────── */
+.app[data-collapsed="true"] .sidebar{
+  width:var(--sb-w-collapsed);
+  padding:18px 6px;
+}
+/* Header reorders: toggle on TOP, logo BELOW (matching Figma 34:1924) */
+.app[data-collapsed="true"] .sidebar-head{
+  flex-direction:column-reverse;
+  align-items:center;justify-content:center;
+  gap:12px;
+}
+.app[data-collapsed="true"] .logo{
+  width:32px;height:32px;
+}
+.app[data-collapsed="true"] .label,
+.app[data-collapsed="true"] .nav-history,
+.app[data-collapsed="true"] .nav-divider-history{display:none;}
+.app[data-collapsed="true"] .nav-list{
+  width:36px;
+  align-self:center;
+}
+.app[data-collapsed="true"] .nav-item{
+  justify-content:center;padding:8px;gap:0;
+}
+.app[data-collapsed="true"] .nav-divider{
+  width:24px;align-self:center;
+}
+.app[data-collapsed="true"] .sidebar-foot{
+  flex-direction:column-reverse;
+  justify-content:center;align-items:center;
+  gap:12px;
+  padding-right:0;
+}
+.app[data-collapsed="true"] .system{
+  flex-direction:column;gap:16px;
+}
+.app[data-collapsed="true"] .badge{
+  border-color:var(--sidebar-bg);
+}
+
+/* ────────────────── Main column ────────────────── */
+.main{
+  min-width:0;
+  background:var(--paper);
+  overflow-x:hidden;
+  position:relative;
+}
+.page{display:none;}
+.page.active{display:block;}
+.chat-page.active{display:flex;justify-content:center;align-items:center;}
+
+/* Floating toggle (visible on every page when sidebar is collapsed for safety net) */
+.floating-toggle{display:none;}
+
+/* ────────────────── Chat / 新建对话 ────────────────── */
+.chat-page{
+  min-height:100vh;
+  padding:48px 24px 80px;
+  position:relative;
+  overflow:hidden;
+}
+/* Tidal-masked dot bg with 3 morphing silhouettes (space / library / lab) */
+.chat-bg{
+  position:absolute;inset:0;
+  pointer-events:none;z-index:0;
+  -webkit-mask-image:radial-gradient(ellipse 52% 46% at 50% 52%,rgba(0,0,0,.025) 0%,rgba(0,0,0,.10) 30%,rgba(0,0,0,.20) 50%,rgba(0,0,0,.50) 70%,rgba(0,0,0,.85) 88%,rgba(0,0,0,1) 100%);
+          mask-image:radial-gradient(ellipse 52% 46% at 50% 52%,rgba(0,0,0,.025) 0%,rgba(0,0,0,.10) 30%,rgba(0,0,0,.20) 50%,rgba(0,0,0,.50) 70%,rgba(0,0,0,.85) 88%,rgba(0,0,0,1) 100%);
+  -webkit-mask-size:170% 170%;mask-size:170% 170%;
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+  opacity:.7;
+  animation:homeGridTide 10s ease-in-out infinite;
+}
+.chat-bg > svg{
+  width:100%;height:100%;display:block;
+  color:#b89d6e;
+}
+.chat-bg > svg rect{ fill:currentColor; }
+[data-theme="dark"] .chat-bg{ opacity:.45; }
+[data-theme="dark"] .chat-bg > svg{ color:#7aa5db; }
+[data-theme="cool"] .chat-bg > svg{ color:#9aaec8; }
+
+/* 3 theme groups — 60s cycle. Group-level fade + an SVG filter applies
+ * per-pixel turbulent displacement during transitions for the rearrangement feel. */
+.chat-bg .t-space,
+.chat-bg .t-library,
+.chat-bg .t-lab{
+  opacity:0;
+  animation:bgThemeCycle 60s ease-in-out infinite;
+}
+.chat-bg .t-space  { animation-delay:0s; }
+.chat-bg .t-library{ animation-delay:-40s; }
+.chat-bg .t-lab    { animation-delay:-20s; }
+@keyframes bgThemeCycle{
+  0%   { opacity:0; }
+  4%   { opacity:.54; }
+  30%  { opacity:.54; }
+  34%  { opacity:0; }
+  100% { opacity:0; }
+}
+@keyframes homeGridTide{
+  0%   {-webkit-mask-position:0% 20%;     mask-position:0% 20%;   opacity:.30;}
+  20%  {-webkit-mask-position:60% 60%;    mask-position:60% 60%;  opacity:.92;}
+  40%  {-webkit-mask-position:10% 80%;    mask-position:10% 80%;  opacity:.42;}
+  60%  {-webkit-mask-position:100% 30%;   mask-position:100% 30%; opacity:.95;}
+  80%  {-webkit-mask-position:35% 70%;    mask-position:35% 70%;  opacity:.42;}
+  100% {-webkit-mask-position:0% 20%;     mask-position:0% 20%;   opacity:.30;}
+}
+.chat-inner{
+  width:100%;
+  max-width:880px;
+  margin:0 auto;
+  display:flex;flex-direction:column;align-items:center;
+  transform:translateY(-24px);
+  position:relative;z-index:1;
+}
+.chat-mark{
+  width:40px;height:40px;
+  display:grid;place-items:center;
+  margin-bottom:20px;
+  color:var(--ink);
+}
+.chat-mark svg{
+  width:100%;height:100%;display:block;
+}
+.title-block{text-align:center;margin-bottom:40px;}
+.title-cn{
+  font-family:var(--font-serif);
+  font-weight:400;font-size:46px;
+  color:var(--ink);
+  letter-spacing:.1em;
+  line-height:1.18;
+}
+.title-cn em{
+  font-family:var(--font-serif);
+  font-style:italic;font-weight:500;
+  color:var(--vermilion);
+}
+.title-en{
+  font-family:var(--font-serif);font-style:italic;font-weight:500;
+  font-size:24px;color:var(--ink-soft);
+  letter-spacing:.04em;
+  line-height:1.3;
+  margin-top:6px;
+}
+.title-sub{
+  font-family:var(--font-sans);
+  font-size:15px;color:var(--ink-soft);font-weight:300;
+  line-height:1.7;letter-spacing:.01em;
+  max-width:560px;margin:14px auto 0;
+}
+
+/* Composer — 0526 reference style: white card, soft blue inner shadow, mode-tabs row up top */
+.input-wrap{
+  width:100%;
+  background:#fff;
+  border:1px solid var(--rule);
+  border-radius:4px;
+  box-shadow:var(--shadow-card);
+  padding:0;
+  position:relative;
+  transition:border-color var(--t-base) var(--ease),box-shadow var(--t-base) var(--ease);
+}
+.input-wrap:focus-within{
+  border-color:var(--vermilion);
+  box-shadow:0 4px 16px rgba(15,28,46,.10);
+}
+.input-wrap::after{display:none;}
+.composer-body{padding:18px 22px 14px;}
+.input-wrap textarea{
+  width:100%;border:0;outline:0;resize:none;
+  font:14px/1.65 var(--font-sans);
+  color:var(--ink);background:transparent;
+  min-height:60px;
+}
+.input-wrap textarea::placeholder{color:var(--ink-faint);}
+.input-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:10px;
+}
+.mode-pills{display:flex;gap:8px;align-items:center;}
+
+/* Mutex segment: 科研问答 / 深度研究 */
+.mode-segment{
+  display:inline-flex;align-items:stretch;
+  background:var(--paper-warm);
+  border:1px solid var(--rule);
+  border-radius:4px;
+  padding:0;
+  gap:0;
+  overflow:hidden;
+}
+.mode-seg-item{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:5px 12px;
+  font-size:13px;color:var(--ink-mute);
+  border-radius:0;
+  cursor:pointer;white-space:nowrap;user-select:none;
+  transition:background var(--t-fast) var(--ease),color var(--t-fast) var(--ease),box-shadow var(--t-fast) var(--ease);
+}
+.mode-seg-item:hover{color:var(--ink);}
+.mode-seg-item.active{
+  background:var(--paper);
+  color:var(--ink);
+  font-weight:500;
+}
+.mode-seg-item .icon{width:14px;height:14px;flex-shrink:0;opacity:.7;}
+.mode-seg-item.active .icon{opacity:1;}
+
+/* Independent toggle: 思考 */
+.mode-toggle{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:5px 11px;
+  font-size:13px;color:var(--ink-mute);
+  background:transparent;
+  border:1px solid transparent;
+  border-radius:4px;
+  cursor:pointer;white-space:nowrap;user-select:none;
+  transition:background var(--t-fast) var(--ease),color var(--t-fast) var(--ease);
+}
+.mode-toggle:hover{color:var(--ink);background:var(--paper-warm);}
+.mode-toggle.active{
+  color:var(--vermilion);
+  background:var(--vermilion-bg);
+  border-color:transparent;
+  font-weight:500;
+}
+.mode-toggle .icon{width:14px;height:14px;flex-shrink:0;opacity:.75;}
+.mode-toggle.active .icon{opacity:1;}
+.input-actions{display:flex;align-items:center;gap:8px;}
+.icon-btn{
+  width:28px;height:28px;display:grid;place-items:center;
+  border-radius:3px;color:var(--ink-mute);
+  transition:background var(--t-fast) var(--ease),color var(--t-fast) var(--ease);
+}
+.icon-btn:hover{background:var(--paper-warm);color:var(--ink);}
+.send-btn{
+  width:32px;height:32px;
+  display:inline-grid;place-items:center;
+  border-radius:8px;
+  background:var(--vermilion);
+  color:#fff;
+  border:0;
+  cursor:pointer;
+  transition:background var(--t-fast) var(--ease),transform var(--t-fast) var(--ease),opacity var(--t-fast) var(--ease);
+}
+.send-btn:hover:not(:disabled){background:var(--vermilion-7);transform:translateY(-1px);}
+.send-btn:disabled{
+  background:var(--paper-warm);
+  color:var(--ink-faint);
+  cursor:not-allowed;
+  transform:none;
+}
+.send-btn svg{width:16px;height:16px;}
+
+/* Section eyebrow — mono label between thin rules, used as section header */
+.section-block{
+  width:100%;
+  margin-top:24px;
+}
+.section-eyebrow{
+  display:flex;align-items:center;gap:14px;
+  font-family:var(--font-mono);
+  font-size:11px;font-weight:500;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+  margin-bottom:18px;
+}
+.section-eyebrow::before,
+.section-eyebrow::after{
+  content:"";flex:1;height:1px;background:var(--rule-soft);
+}
+.section-eyebrow .cn{
+  font-family:var(--font-cn-serif);
+  font-size:13px;letter-spacing:.18em;
+  color:var(--ink-soft);
+  font-weight:500;
+  text-transform:none;
+  margin-left:6px;
+}
+
+/* Section head (with number + serif title + sub) — mirrors 0526 reference */
+.section-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  margin-bottom:24px;padding-bottom:14px;
+  border-bottom:1px solid var(--rule);
+}
+.section-head-left{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;}
+.section-num{
+  font-family:var(--font-mono);
+  font-size:12px;color:var(--vermilion);
+  letter-spacing:.18em;text-transform:uppercase;
+  font-weight:500;
+}
+.section-h-title{
+  font-family:var(--font-cn-serif);
+  font-size:22px;font-weight:600;color:var(--ink);
+  letter-spacing:.02em;
+}
+.section-sub{
+  font-size:13px;color:var(--ink-mute);
+  font-family:var(--font-sans);letter-spacing:.05em;
+}
+
+/* Suggestions — single-column list with hairline dividers */
+.suggestions{
+  display:flex;flex-direction:column;
+  width:100%;
+  margin:0 auto;
+}
+.sug{
+  display:flex;align-items:center;gap:14px;
+  padding:8px 4px;
+  background:transparent;
+  border:0;
+  border-bottom:1px solid var(--rule-soft);
+  border-radius:0;
+  box-shadow:none;
+  font-size:13.5px;color:var(--ink-soft);
+  cursor:pointer;
+  transition:color var(--t-fast) var(--ease),border-color var(--t-fast) var(--ease);
+}
+.sug:last-child{ border-bottom:0; }
+.sug:hover{
+  color:var(--ink);
+  background:transparent;
+  border-color:var(--rule);
+  box-shadow:none;
+  transform:none;
+}
+.sug-text{
+  flex:1;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* Inner tag — pill, category-tinted outline (no fill) */
+.sug-tag{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:2px 10px;min-width:64px;
+  font-family:var(--font-mono);font-size:10.5px;
+  letter-spacing:.06em;
+  border-radius:9999px;flex-shrink:0;
+  background:transparent;
+  border:1px solid var(--rule);
+  color:var(--ink-mute);
+}
+.sug-tag.deep{   /* 深度思考 — 朱砂蓝 */
+  border-color:#88aede;
+  color:#0f4a85;
+}
+.sug-tag.web{    /* 联网思考 — 苔绿 */
+  border-color:#9bb16a;
+  color:#5a6630;
+}
+.sug-tag.ask{    /* 智能问答 — 蜜金 */
+  border-color:#cca464;
+  color:#7a5e2c;
+}
+
+/* Featured Agents — mirror 0526 project-card */
+.expert-block{
+  width:100%;
+  margin-top:80px;
+}
+.expert-block .section-eyebrow{margin-bottom:22px;justify-content:center;}
+.expert-block .section-eyebrow::before,
+.expert-block .section-eyebrow::after{
+  display:block;
+  content:"";
+  flex:1;
+  height:0;
+  background:transparent;
+  border-top:1px dashed var(--rule);
+}
+.expert-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+}
+.expert-card{
+  position:relative;
+  background:#fff;
+  border:1px solid var(--rule);
+  border-radius:4px;
+  padding:20px 22px;
+  cursor:pointer;
+  display:flex;flex-direction:column;gap:8px;
+  min-height:130px;
+  transition:border-color var(--t-base) var(--ease),box-shadow var(--t-base) var(--ease),transform var(--t-base) var(--ease);
+}
+.expert-card:hover{
+  border-color:var(--vermilion);
+  transform:translateY(-1px);
+  box-shadow:var(--shadow-card-hover);
+}
+.expert-tag{
+  align-self:flex-start;
+  font-family:var(--font-mono);
+  font-size:11px;font-weight:500;
+  letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-mute);
+  margin-bottom:6px;
+}
+.expert-title{
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--font-cn-serif);
+  font-size:16px;font-weight:600;color:var(--ink);
+  letter-spacing:.02em;line-height:1.35;
+}
+.expert-title .icon{width:18px;height:18px;color:var(--vermilion);flex-shrink:0;}
+.expert-desc{
+  font-size:13px;line-height:1.6;
+  color:var(--ink-mute);
+  flex-grow:1;
+}
+
+/* ────────────────── SCP 广场 ────────────────── */
+.scp-page{padding:40px 24px 80px;}
+.scp-inner{
+  max-width:1280px;
+  margin:0 auto;
+  width:100%;
+}
+
+.scp-head{
+  margin-bottom:24px;padding-bottom:18px;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow{
+  font-family:var(--font-mono);
+  font-size:12px;letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--vermilion);
+  font-weight:500;
+  margin-bottom:10px;
+}
+.scp-title{
+  font-family:var(--font-cn-serif);
+  font-weight:600;font-size:22px;
+  color:var(--ink);
+  letter-spacing:.02em;
+  margin-bottom:6px;
+}
+.scp-sub{
+  font-size:13px;color:var(--ink-mute);
+  letter-spacing:.05em;
+}
+
+/* Hero banners — match Figma 39:2181 (tag chips above 2-line title) */
+.banner-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:14px;
+  margin:24px 0 32px;
+}
+.banner{
+  position:relative;height:132px;border-radius:4px;
+  padding:14px 16px;overflow:hidden;
+  cursor:pointer;
+  transition:transform var(--t-base) var(--ease);
+  display:flex;flex-direction:column;justify-content:space-between;
+  color:#fff;
+}
+.banner:hover{transform:translateY(-2px);}
+.banner::before{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,0) 35%,rgba(0,0,0,.45) 100%);
+}
+.banner-1{background:radial-gradient(120% 130% at 80% 10%,#5b8de8 0%,#1554a8 55%,#0c3c80 100%);}
+.banner-2{background:radial-gradient(120% 130% at 80% 20%,#a8d0a8 0%,#3a8a6a 55%,#1f5a48 100%);}
+.banner-3{background:radial-gradient(120% 130% at 80% 20%,#d4b97a 0%,#a8864b 55%,#7a5e2c 100%);}
+.banner-4{background:radial-gradient(120% 130% at 20% 20%,#9a7ec8 0%,#5e4a9c 55%,#3a2c6b 100%);}
+.banner-tags{
+  position:relative;z-index:1;
+  display:flex;flex-wrap:wrap;gap:6px;
+}
+.banner-chip{
+  font-family:var(--font-mono);font-size:10px;
+  padding:2px 6px;
+  background:rgba(255,255,255,.18);
+  backdrop-filter:blur(4px);
+  border-radius:2px;
+  letter-spacing:.06em;
+  color:#fff;white-space:nowrap;
+}
+.banner-content{position:relative;z-index:1;}
+.banner-name{
+  font-family:var(--font-serif);font-style:italic;font-weight:500;
+  font-size:18px;line-height:1.25;letter-spacing:.01em;
+  color:#fff;
+}
+.banner-name .cn{
+  font-family:var(--font-cn-serif);font-style:normal;
+  font-size:14px;font-weight:500;
+  display:block;color:rgba(255,255,255,.92);
+  margin-top:2px;
+}
+
+/* Tabs — bottom-border vermilion accent (0526 reference) */
+.tabs{
+  display:flex;gap:32px;
+  border-bottom:1px solid var(--rule);
+  margin-bottom:24px;
+}
+.tab{
+  position:relative;
+  padding:0 0 12px;
+  font-size:15px;font-weight:500;
+  color:var(--ink-mute);
+  letter-spacing:.02em;
+  cursor:pointer;
+  transition:color var(--t-fast) var(--ease);
+}
+.tab:hover{color:var(--ink);}
+.tab.active{color:var(--vermilion);}
+.tab.active::after{
+  content:"";position:absolute;
+  left:0;right:0;bottom:-1px;
+  height:2px;background:var(--vermilion);
+}
+
+/* Filter rows (with optional chip icons) */
+.filter-row{
+  display:flex;flex-wrap:wrap;align-items:center;gap:6px;
+  margin-bottom:10px;font-size:13px;
+}
+.filter-label{
+  font-family:var(--font-mono);font-size:12px;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-mute);
+  margin-right:8px;flex-shrink:0;
+}
+.chip{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:6px 13px 6px 10px;
+  border-radius:2px;
+  font-size:13px;color:var(--ink-soft);
+  background:var(--paper-warm);
+  border:1px solid var(--rule);
+  box-shadow:0 1px 2px rgba(26,35,50,.04);
+  cursor:pointer;
+  white-space:nowrap;
+  transition:background var(--t-fast) var(--ease),color var(--t-fast) var(--ease),border-color var(--t-fast) var(--ease),box-shadow var(--t-fast) var(--ease);
+}
+.chip:hover{
+  background:var(--vermilion-bg);
+  color:var(--vermilion);
+  border-color:var(--vermilion-soft);
+  box-shadow:0 2px 8px -2px rgba(22,97,171,.15);
+}
+.chip.active{
+  background:transparent;color:var(--ink);
+  border-color:var(--ink-faint);
+  box-shadow:none;
+}
+.chip.active:hover{
+  background:transparent;color:var(--ink);border-color:var(--ink-faint);
+}
+.chip .icon{width:13px;height:13px;}
+
+/* Search row */
+.search-row{
+  display:flex;align-items:center;gap:16px;
+  margin:18px 0 24px;
+  padding-top:16px;border-top:1px dashed var(--rule);
+}
+.search-row .meta-label{
+  font-family:var(--font-mono);font-size:12px;
+  letter-spacing:.1em;color:var(--ink);
+  font-weight:500;
+}
+.search-row .meta-text{
+  font-size:13px;color:var(--ink-soft);
+}
+.search-row .meta-text strong{color:var(--vermilion-6);font-weight:600;font-family:var(--font-mono);}
+.search-input{
+  margin-left:auto;width:309px;
+  display:flex;align-items:center;gap:8px;
+  padding:8px 12px;height:36px;
+  background:#fff;border:1px solid var(--rule);
+  border-radius:2px;
+  transition:border-color var(--t-fast) var(--ease);
+}
+.search-input:focus-within{border-color:var(--vermilion-6);box-shadow:var(--shadow-focus);}
+.search-input .icon{width:14px;height:14px;color:var(--ink-mute);}
+.search-input input{
+  flex:1;border:0;outline:0;background:transparent;
+  font:13px var(--font-sans);color:var(--ink);
+}
+.search-input input::placeholder{color:var(--ink-faint);}
+
+/* Skill cards — mirror 0526 project-card (white surface, vermilion hover, blue shadow) */
+.skill-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+}
+.skill-card{
+  position:relative;
+  background:#fff;border:1px solid var(--rule);
+  border-radius:4px;padding:22px;
+  display:flex;flex-direction:column;gap:10px;
+  min-height:180px;
+  cursor:pointer;
+  transition:border-color var(--t-base) var(--ease),box-shadow var(--t-base) var(--ease),transform var(--t-base) var(--ease);
+}
+.skill-card:hover{
+  border-color:var(--vermilion);
+  transform:translateY(-1px);
+  box-shadow:var(--shadow-card-hover);
+}
+.skill-card-head{display:flex;align-items:center;gap:8px;}
+.skill-name{
+  font-family:var(--font-cn-serif);
+  font-size:16px;font-weight:600;color:var(--ink);
+  flex:1;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  letter-spacing:.02em;line-height:1.35;
+}
+.cert-badge{
+  display:inline-flex;align-items:center;gap:3px;
+  padding:2px 7px;
+  font-family:var(--font-mono);font-size:10px;font-weight:500;
+  background:var(--success-bg);color:var(--success);
+  border-radius:2px;
+  letter-spacing:.06em;flex-shrink:0;
+  border:1px solid rgba(107,122,58,.18);
+}
+.cert-badge .icon{width:10px;height:10px;}
+.skill-tags{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+.skill-tag{
+  display:inline-flex;align-items:center;gap:4px;
+  font-family:var(--font-mono);font-size:11px;
+  padding:2px 7px;
+  background:var(--vermilion-1);color:var(--vermilion-6);
+  border-radius:2px;letter-spacing:.04em;
+  border:1px solid var(--ai-tint-rule);
+}
+.skill-tag.custom{background:var(--paper-warm);color:var(--ink-soft);border-color:var(--rule);}
+.skill-tag .icon{width:10px;height:10px;}
+.skill-tag.more{
+  background:transparent;color:var(--ink-mute);
+  border:1px dashed var(--rule);
+  font-weight:500;
+}
+.skill-desc{
+  font-size:13px;line-height:1.65;
+  color:var(--ink-mute);
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
+  overflow:hidden;
+  flex:1;
+}
+.skill-foot{
+  display:flex;align-items:center;gap:14px;
+  font-family:var(--font-mono);font-size:12px;
+  letter-spacing:.04em;
+  color:var(--ink-faint);
+  margin-top:auto;padding-top:14px;
+  border-top:1px solid var(--rule-soft);
+}
+.skill-foot .author{display:inline-flex;align-items:center;gap:5px;color:var(--ink-soft);}
+.skill-foot .author .a-avatar{
+  width:16px;height:16px;border-radius:50%;
+  background:linear-gradient(135deg,var(--vermilion-4),var(--vermilion-6));
+  color:#fff;font-size:9px;font-weight:500;
+  display:grid;place-items:center;
+}
+.skill-foot .stat{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);}
+.skill-foot .stat .icon{width:12px;height:12px;}
+.skill-foot .date{margin-left:auto;font-family:var(--font-mono);display:inline-flex;align-items:center;gap:4px;}
+.skill-foot .date .icon{width:11px;height:11px;}
+
+/* placeholder pages share centered layout */
+.simple-page{
+  padding:88px 24px 80px;
+  max-width:800px;margin:0 auto;
+}
+
+/* ────────────────── Generic placeholder pages (papers / kb / data / workbench / history) ────────────────── */
+.ph-toolbar{
+  display:flex;flex-wrap:wrap;align-items:center;gap:6px;
+  margin:18px 0 24px;padding-bottom:16px;
+  border-bottom:1px dashed var(--rule);
+}
+.ph-toolbar .filter-label{margin-right:4px;}
+.ph-search{
+  margin-left:auto;
+  display:flex;align-items:center;gap:8px;
+  padding:6px 12px;height:32px;min-width:240px;
+  background:#fff;border:1px solid var(--rule);
+  border-radius:2px;
+  transition:border-color var(--t-fast) var(--ease);
+}
+.ph-search:focus-within{border-color:var(--vermilion-6);box-shadow:var(--shadow-focus);}
+.ph-search .icon{width:14px;height:14px;color:var(--ink-mute);flex-shrink:0;}
+.ph-search input{
+  flex:1;border:0;outline:0;background:transparent;
+  font:13px var(--font-sans);color:var(--ink);min-width:0;
+}
+.ph-search input::placeholder{color:var(--ink-faint);}
+.ph-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+}
+.ph-card{
+  position:relative;
+  background:#fff;border:1px solid var(--rule);
+  border-radius:4px;padding:22px;
+  display:flex;flex-direction:column;gap:10px;
+  min-height:180px;cursor:pointer;
+  transition:border-color var(--t-base) var(--ease),box-shadow var(--t-base) var(--ease),transform var(--t-base) var(--ease);
+}
+.ph-card:hover{
+  border-color:var(--vermilion);
+  transform:translateY(-1px);
+  box-shadow:var(--shadow-card-hover);
+}
+.ph-tag{
+  align-self:flex-start;
+  font-family:var(--font-mono);font-size:11px;font-weight:500;
+  letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-mute);
+  margin-bottom:2px;
+}
+.ph-title{
+  font-family:var(--font-cn-serif);
+  font-size:16px;font-weight:600;color:var(--ink);
+  letter-spacing:.02em;line-height:1.4;
+}
+.ph-desc{
+  font-size:13px;line-height:1.65;color:var(--ink-mute);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.ph-meta{
+  display:flex;gap:14px;align-items:center;
+  margin-top:auto;padding-top:14px;
+  border-top:1px solid var(--rule-soft);
+  font-family:var(--font-mono);font-size:12px;
+  letter-spacing:.04em;
+  color:var(--ink-faint);
+}
+.ph-meta .stat{display:inline-flex;align-items:center;gap:4px;}
+.ph-meta .stat .icon{width:12px;height:12px;}
+.ph-meta .date{margin-left:auto;display:inline-flex;align-items:center;gap:4px;}
+.ph-meta .date .icon{width:11px;height:11px;}
+
+/* History nav-item is a non-clickable section header — navigation goes through "查看全部" */
+.nav-item-history{cursor:default;}
+
+@media (prefers-reduced-motion: reduce){
+  *{transition:none !important;animation:none !important;}
+}
+@media (max-width:1080px){
+  .banner-grid{grid-template-columns:repeat(2,1fr);}
+  .skill-grid{grid-template-columns:repeat(2,1fr);}
+  .ph-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width:720px){
+  .banner-grid,.skill-grid,.expert-grid,.ph-grid{grid-template-columns:1fr;}
+}
+
+/* ────────────────── Dark mode: surface + text overrides ──────────────────
+ * 修复硬编码白色填充与文字色，使其在 [data-theme="dark"] 下回归 token。
+ * 参考：discoveryos-style-guide.v2.2.tweakcn.css §dark
+ *   --card: #252320   --background: #1a1815   --foreground: #ebe6dc
+ *   --muted-foreground: #8a8478 (AA 4.5:1)
+ * ──────────────────────────────────────────────────────────────────────── */
+
+/* Sidebar — text & nav */
+[data-theme="dark"] .nav-item{color:var(--ink-soft);}
+[data-theme="dark"] .nav-item .icon{color:var(--ink-mute);}
+[data-theme="dark"] .nav-item:hover{background:var(--paper-warm);color:var(--ink);}
+[data-theme="dark"] .nav-item:hover .icon{color:var(--ink);}
+[data-theme="dark"] .nav-item.active{
+  background:var(--paper-warm);
+  border-color:var(--rule);
+  color:var(--vermilion);
+}
+[data-theme="dark"] .nav-item.active .icon{color:var(--vermilion);}
+[data-theme="dark"] .toggle-btn:hover{
+  background:var(--paper-warm);color:var(--ink);border-color:var(--rule);
+}
+[data-theme="dark"] .history-item{color:var(--ink-mute);}
+[data-theme="dark"] .history-item:hover{color:var(--ink);}
+[data-theme="dark"] .history-item.view-all{color:var(--ink-soft);}
+
+/* Composer — 输入卡片 */
+[data-theme="dark"] .input-wrap{
+  background:var(--paper-warm);
+  border-color:var(--rule);
+}
+[data-theme="dark"] .input-wrap:focus-within{
+  border-color:var(--vermilion);
+  box-shadow:0 4px 16px rgba(0,0,0,.45);
+}
+
+/* Mode segment / 思考 toggle 暗色域 */
+[data-theme="dark"] .mode-segment{
+  background:var(--paper-cool);
+  border-color:var(--rule);
+}
+[data-theme="dark"] .mode-seg-item{color:var(--ink-mute);}
+[data-theme="dark"] .mode-seg-item:hover{color:var(--ink);}
+[data-theme="dark"] .mode-seg-item.active{
+  background:var(--paper-warm);
+  color:var(--ink);
+}
+[data-theme="dark"] .mode-toggle{color:var(--ink-mute);border-color:transparent;}
+[data-theme="dark"] .mode-toggle:hover{color:var(--ink);background:var(--paper-warm);}
+[data-theme="dark"] .mode-toggle.active{
+  color:var(--vermilion);
+  background:var(--vermilion-bg);
+  border-color:transparent;
+}
+
+/* Sug 在暗色域 — 标签保持类别色，悬浮态使用更亮的卡片色 */
+[data-theme="dark"] .sug{
+  border-bottom-color:var(--rule-soft);
+}
+[data-theme="dark"] .sug:hover{
+  background:transparent;
+  border-color:var(--rule);
+  color:var(--ink);
+}
+[data-theme="dark"] .sug-tag.deep{ background:transparent; border-color:#5b88c2; color:#c4daf2; }
+[data-theme="dark"] .sug-tag.web{  background:transparent; border-color:#7d8c4c; color:#cfdb95; }
+[data-theme="dark"] .sug-tag.ask{  background:transparent; border-color:#a48553; color:#e6c184; }
+
+/* Cards — expert / skill / ph 全部回到 --paper-warm（= tweakcn --card #252320） */
+[data-theme="dark"] .expert-card,
+[data-theme="dark"] .skill-card,
+[data-theme="dark"] .ph-card{
+  background:var(--paper-warm);
+  border-color:var(--rule);
+}
+[data-theme="dark"] .expert-card:hover,
+[data-theme="dark"] .skill-card:hover,
+[data-theme="dark"] .ph-card:hover{
+  border-color:var(--vermilion-soft);
+  box-shadow:var(--shadow-card-hover);
+}
+
+/* Inputs / search 行 */
+[data-theme="dark"] .search-input,
+[data-theme="dark"] .ph-search{
+  background:var(--paper-warm);
+  border-color:var(--rule);
+}
+
+/* 浅化朱砂底（vermilion gradient）在暗色域为浅蓝 — 需深色文字保证对比 */
+[data-theme="dark"] .avatar,
+[data-theme="dark"] .skill-foot .author .a-avatar,
+[data-theme="dark"] .send-btn:not(:disabled){
+  color:var(--paper);
+}
+[data-theme="dark"] .send-btn:hover:not(:disabled){background:var(--vermilion-7);}
+[data-theme="dark"] .send-btn:disabled{
+  background:var(--paper-cool);
+  color:var(--ink-faint);
+}
+
+</style>
+</head>
+<body>
+
+<!-- ── SVG icon sprite ────────────────────────────────── -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-sidebar" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="3" width="14" height="12" rx="1"/><path d="M7 3v12"/>
+    </symbol>
+    <symbol id="i-message-plus" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="6" y="6" width="36" height="36" rx="3"/>
+      <path d="M24 16V32"/>
+      <path d="M16 24L32 24"/>
+    </symbol>
+    <symbol id="i-file" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M39 4H11C9.89543 4 9 4.89543 9 6V42C9 43.1046 9.89543 44 11 44H39C40.1046 44 41 43.1046 41 42V6C41 4.89543 40.1046 4 39 4Z"/>
+      <path d="M17 30L31 30"/>
+      <path d="M17 36H24"/>
+      <rect x="17" y="12" width="14" height="10"/>
+    </symbol>
+    <symbol id="i-library" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M32 6H22V42H32V6Z"/>
+      <path d="M42 6H32V42H42V6Z"/>
+      <path d="M10 6L18 7L14.5 42L6 41L10 6Z"/>
+      <path d="M37 18V15"/>
+      <path d="M27 18V15"/>
+    </symbol>
+    <symbol id="i-grid" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 30L9 6H39L44 30"/>
+      <path d="M4 30H14.9091L16.7273 36H31.2727L33.0909 30H44V43H4V30Z"/>
+      <path d="M19 14H29"/>
+      <path d="M16 22H32"/>
+    </symbol>
+    <symbol id="i-database" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M44.0001 11C44.0001 11 44 36.0623 44 38C44 41.3137 35.0457 44 24 44C12.9543 44 4.00003 41.3137 4.00003 38C4.00003 36.1423 4 11 4 11"/>
+      <path d="M44 29C44 32.3137 35.0457 35 24 35C12.9543 35 4 32.3137 4 29"/>
+      <path d="M44 20C44 23.3137 35.0457 26 24 26C12.9543 26 4 23.3137 4 20"/>
+      <ellipse cx="24" cy="10" rx="20" ry="6"/>
+    </symbol>
+    <symbol id="i-dashboard" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 33H4V7H44V33H36H12Z"/>
+      <path d="M16 22V26"/>
+      <path d="M24 33V39"/>
+      <path d="M24 18V26"/>
+      <path d="M32 14V26"/>
+      <path d="M12 41H36"/>
+    </symbol>
+    <symbol id="i-history" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5.81836 6.72729V14H13.0911"/>
+      <path d="M4 24C4 35.0457 12.9543 44 24 44V44C35.0457 44 44 35.0457 44 24C44 12.9543 35.0457 4 24 4C16.598 4 10.1351 8.02111 6.67677 13.9981"/>
+      <path d="M24.005 12L24.0038 24.0088L32.4832 32.4882"/>
+    </symbol>
+    <symbol id="i-msg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H8l-4 3v-3H5a2 2 0 0 1-2-2V5z"/>
+    </symbol>
+    <symbol id="i-doc" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 2h7l4 4v12H5z"/><path d="M12 2v4h4"/><path d="M8 11h6"/><path d="M8 14h4"/>
+    </symbol>
+    <symbol id="i-paperclip" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M24.7073 9.56521L9.85801 24.4145C6.34329 27.9292 6.34329 33.6277 9.85801 37.1424C13.3727 40.6571 19.0712 40.6571 22.5859 37.1424L40.2636 19.4647C42.6067 17.1216 42.6067 13.3226 40.2636 10.9794C37.9205 8.63628 34.1215 8.63628 31.7783 10.9794L14.1007 28.6571C12.9291 29.8287 12.9291 31.7282 14.1007 32.8997C15.2722 34.0713 17.1717 34.0713 18.3433 32.8997L33.1925 18.0505"/>
+    </symbol>
+    <symbol id="i-arrow-up" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M42 6L4 20.1383L24 24.0083L29.0052 44L42 6Z"/>
+      <path d="M24.0083 24.0084L29.6651 18.3516"/>
+    </symbol>
+    <symbol id="i-sun" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="9" cy="9" r="3.2"/>
+      <path d="M9 1.6v1.8"/><path d="M9 14.6v1.8"/>
+      <path d="M1.6 9h1.8"/><path d="M14.6 9h1.8"/>
+      <path d="M3.8 3.8l1.3 1.3"/><path d="M12.9 12.9l1.3 1.3"/>
+      <path d="M3.8 14.2l1.3-1.3"/><path d="M12.9 5.1l1.3-1.3"/>
+    </symbol>
+    <symbol id="i-moon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15.4 11.2A6.5 6.5 0 0 1 6.8 2.6a6.6 6.6 0 1 0 8.6 8.6z"/>
+    </symbol>
+    <symbol id="i-snow" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 1.6v14.8"/>
+      <path d="M2.6 5.3l12.8 7.4"/>
+      <path d="M2.6 12.7l12.8-7.4"/>
+      <path d="M7.6 3.1L9 4.5l1.4-1.4"/>
+      <path d="M7.6 14.9L9 13.5l1.4 1.4"/>
+      <path d="M3.5 7l-1.4.4M3.5 11l-1.4-.4"/>
+      <path d="M14.5 7l1.4.4M14.5 11l1.4-.4"/>
+    </symbol>
+    <symbol id="i-theme" viewBox="0 0 18 18" fill="none">
+      <circle cx="9" cy="9" r="6.6" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M9 2.4a6.6 6.6 0 0 1 0 13.2z" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3v3"/><path d="M12 18v3"/><path d="M3 12h3"/><path d="M18 12h3"/><path d="M5.6 5.6l2.1 2.1"/><path d="M16.3 16.3l2.1 2.1"/><path d="M5.6 18.4l2.1-2.1"/><path d="M16.3 7.7l2.1-2.1"/>
+    </symbol>
+    <symbol id="i-astrolabe" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="24" cy="24" r="20"/>
+      <circle cx="24" cy="24" r="12"/>
+      <path d="M24 4v6"/><path d="M24 38v6"/>
+      <path d="M4 24h6"/><path d="M38 24h6"/>
+      <path d="M9.86 9.86l4.24 4.24"/><path d="M33.9 33.9l4.24 4.24"/>
+      <path d="M9.86 38.14l4.24-4.24"/><path d="M33.9 14.1l4.24-4.24"/>
+      <path d="M24 14l2.2 8L24 24l-2.2-2z" fill="currentColor"/>
+      <circle cx="24" cy="24" r="1.6" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-brain" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M37 16C39.7614 16 42 13.7614 42 11C42 8.23858 39.7614 6 37 6C34.2386 6 32 8.23858 32 11C32 13.7614 34.2386 16 37 16Z"/>
+      <path d="M11 42C13.7614 42 16 39.7614 16 37C16 34.2386 13.7614 32 11 32C8.23858 32 6 34.2386 6 37C6 39.7614 8.23858 42 11 42Z"/>
+      <path d="M37 16V35.5042C37 39.0917 34.0917 42 30.5042 42C26.9166 42 24.0083 39.0917 24.0083 35.5042V12.5042C24.0083 8.91201 21.0963 6 17.5042 6C13.912 6 11 8.91201 11 12.5042L11 32"/>
+    </symbol>
+    <symbol id="i-flask" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 4H36"/>
+      <path d="M10.7769 30L18.019 15.0386V4H30.0283V15.0386L37.246 30"/>
+      <path d="M7.79433 43.673C6.16744 42.8855 5.48698 40.9282 6.27449 39.3013L10.7769 30C10.7769 30 18.0001 35 24.0001 30C30.0001 25 37.2461 30 37.2461 30L41.7352 39.3052C41.9492 39.7488 42.0603 40.2348 42.0603 40.7273C42.0603 42.5347 40.595 44 38.7876 44H9.22025C8.72636 44 8.23888 43.8882 7.79433 43.673Z"/>
+    </symbol>
+    <symbol id="i-dna" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 16C19.1961 13.8571 20.2353 8.85714 24 6C25.3725 7.66667 28.5294 12 29 16"/>
+      <path d="M23.7523 42C15.2826 40.5455 -0.301481 31.3091 5.11908 6C12.2712 7.63636 26.0108 17.1273 23.7523 42Z"/>
+      <path d="M24.2477 42C32.7174 40.5455 48.3015 31.3091 42.8809 6C35.7288 7.63636 21.9892 17.1273 24.2477 42Z"/>
+    </symbol>
+    <symbol id="i-clipboard" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M24 32C28.4183 32 32 28.4183 32 24C32 19.5817 28.4183 16 24 16C19.5817 16 16 19.5817 16 24C16 28.4183 19.5817 32 24 32Z"/>
+      <path d="M24 16V4"/>
+      <path d="M10 10L18.3431 18.3431"/>
+      <path d="M37.6569 10L29.3137 18.3431"/>
+      <path d="M4.43266 19.8427C4.14914 21.1838 4 22.5745 4 24C4 25.4255 4.14914 26.8162 4.43266 28.1573"/>
+      <path d="M43.5673 19.8427C43.8509 21.1838 44 22.5745 44 24C44 25.4255 43.8509 26.8162 43.5673 28.1573"/>
+      <path d="M24 32V44"/>
+      <path d="M10 38L18.3431 29.6569"/>
+      <path d="M37.6569 38L29.3137 29.6569"/>
+    </symbol>
+    <symbol id="i-search" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="7" cy="7" r="5"/><path d="M14 14l-3-3"/>
+    </symbol>
+    <symbol id="i-check-circle" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="7" cy="7" r="5.5"/><path d="M4.5 7l1.5 1.5L9.5 5"/>
+    </symbol>
+    <symbol id="i-download" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M7 2v7"/><path d="M4 6l3 3 3-3"/><path d="M2 11h10"/>
+    </symbol>
+    <symbol id="i-clock" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="7" cy="7" r="5"/><path d="M7 4v3l2 1.5"/>
+    </symbol>
+    <symbol id="i-chev-down" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 6l4 4 4-4"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="app" id="app">
+  <!-- ─── Sidebar ─────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-head">
+      <div class="logo">
+        <img src="Logo.svg" alt="DiscoveryOS" />
+      </div>
+      <button class="toggle-btn" id="toggleBtn" aria-label="切换侧栏" title="折叠 / 展开侧栏">
+        <svg width="18" height="18"><use href="#i-sidebar"/></svg>
+      </button>
+    </div>
+
+    <nav class="nav-list" id="navList">
+      <div class="nav-item active" data-page="chat">
+        <svg class="icon"><use href="#i-message-plus"/></svg>
+        <span class="label">新建对话</span>
+      </div>
+      <div class="nav-item" data-page="papers">
+        <svg class="icon"><use href="#i-file"/></svg>
+        <span class="label">论文空间</span>
+      </div>
+      <div class="nav-item" data-page="kb">
+        <svg class="icon"><use href="#i-library"/></svg>
+        <span class="label">课题</span>
+      </div>
+      <div class="nav-divider"></div>
+      <div class="nav-item" data-page="scp">
+        <svg class="icon"><use href="#i-grid"/></svg>
+        <span class="label">SCP 广场</span>
+      </div>
+      <div class="nav-item" data-page="data">
+        <svg class="icon"><use href="#i-database"/></svg>
+        <span class="label">科学数据</span>
+      </div>
+      <div class="nav-item" data-page="workbench">
+        <svg class="icon"><use href="#i-dashboard"/></svg>
+        <span class="label">工作台</span>
+      </div>
+      <div class="nav-divider nav-divider-history"></div>
+      <div class="nav-item nav-item-history" id="navHistory" data-page="history">
+        <svg class="icon"><use href="#i-history"/></svg>
+        <span class="label">历史话题</span>
+      </div>
+
+      <ul class="nav-history">
+        <li class="history-item" data-full="请详细分析酶促反应的动力学机制：从 Michaelis-Menten 方程出发，逐步引入别构效应与多底物竞争的扩展模型，讨论 Hill 系数的物理意义、Lineweaver-Burk 双倒数作图的局限与替代方法，并给出区分竞争性、非竞争性与反竞争性抑制剂的实验设计。">探讨酶促反应的动力学机制</li>
+        <li class="history-item" data-full="在蛋白质组学研究中，如何结合高效液相色谱（HPLC）与质谱（MS）进行复杂样本的定量分析？请讨论 LC-MS/MS 工作流程、肽段离子化效率、数据库搜索策略（SEQUEST / MaxQuant）以及常见的定量误差来源（基质效应、保留时间漂移、动态范围）。">高效液相色谱法和质谱分析</li>
+        <li class="history-item" data-full="如何在体外条件下精准控制蛋白质的折叠状态？请围绕分子伴侣系统（Hsp70 / Hsp90 / GroEL-ES）、热应激响应路径、复性条件优化（温度、盐浓度、氧化-还原对）展开多步推理，并提出可证伪的实验验证方案。">蛋白质折叠状态的控制</li>
+        <li class="history-item" data-full="新获得的实验数据如何评估对经典理论的支持或挑战？请按『观察-假设-预测-检验』四步框架，分析数据对现有模型的边际增益与可证伪性，区分确认偏差与真实新发现，并提出可重复的后续实验设计。">研究结果如何影响现有理论？</li>
+        <li class="history-item" data-full="底物浓度、pH 值和温度三者如何协同影响酶活力？请基于 Arrhenius 方程与 Henderson-Hasselbalch 方程，构建综合反应速率模型，并设计正交实验以分离主效应与交互效应；讨论酶在高/低 pH 下的不可逆失活与可逆失活区分。">底物浓度、pH 值和温度</li>
+        <li class="history-item" data-full="已采集 50 个生物样本进行蛋白质表达分析，从样本前处理（裂解条件、蛋白酶抑制剂）、SDS-PAGE / Western Blot / LC-MS 定量到统计学校正，请规划完整的全链路分析流程，重点说明假阳性控制（FDR）、多重比较校正（Benjamini-Hochberg）与批次效应矫正策略。">使用 50 个生物样本进行蛋白质表达分析</li>
+        <li class="history-item" data-full="在多变量实验设计中，方差分析（ANOVA）与多元回归分析各自的适用边界与陷阱是什么？请讨论如何选择合适的统计模型，避免共线性、异方差性与混淆变量带来的偏差，并对比 Type I / Type II / Type III SS 在不平衡设计下的差异。">方差分析和多元回归分析</li>
+        <li class="history-item" data-full="如何基于 PPI 数据库（STRING / BioGRID / IntAct）构建蛋白质相互作用子网络，并结合表达谱数据推断关键调控节点？请讨论拓扑指标（degree / betweenness / clustering coefficient）与功能富集分析（GO / KEGG）的整合方法，给出 hub 蛋白验证策略。">探索蛋白质相互作用网络及其调控机制</li>
+        <li class="history-item view-all">查看全部</li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="avatar">M</div>
+      <div class="system">
+        <div class="theme-wrap">
+          <button class="sys-btn theme-toggle" id="themeToggle" aria-label="模式切换" aria-haspopup="menu">
+            <svg width="18" height="18"><use href="#i-theme"/></svg>
+          </button>
+          <div class="theme-pop" role="menu">
+            <button class="theme-opt" data-theme-set="warm" role="menuitem">暖纸</button>
+            <button class="theme-opt" data-theme-set="cool" role="menuitem">浅色</button>
+            <button class="theme-opt" data-theme-set="dark" role="menuitem">深色</button>
+          </div>
+        </div>
+        <button class="sys-btn" aria-label="文档"><svg width="20" height="20"><use href="#i-doc"/></svg></button>
+        <button class="sys-btn" aria-label="消息">
+          <svg width="20" height="20"><use href="#i-msg"/></svg>
+          <span class="badge">7</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ─── Main ────────────────────────────────────────── -->
+  <main class="main">
+
+    <!-- ── 新建对话 ─────────────────────────────────── -->
+    <section class="page chat-page active" id="page-chat">
+      <div class="chat-bg" aria-hidden="true">
+        <svg viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid slice"></svg>
+      </div>
+      <div class="chat-inner">
+        <div class="chat-mark" aria-label="DiscoveryOS">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M19 30H11L19 21" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M39 30C39 17.0082 28.9937 4 19 4V30H39Z" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M32.6512 41.5765L42 36L6 36L8 42L31.1144 42C31.6555 42 32.1865 41.8537 32.6512 41.5765Z" fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M19 30V36" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M29 21L41 21" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="title-block">
+          <div class="title-cn">科学发现 <em>探索未来</em></div>
+          <div class="title-en">Intern Discovery</div>
+          <p class="title-sub">连接科研全流程的智能工作台 · 让每一个洞察都有迹可循</p>
+        </div>
+
+        <div class="input-wrap">
+          <div class="composer-body">
+            <textarea placeholder="输入你的学术难题，开启科研探索与思考"></textarea>
+            <div class="input-foot">
+              <div class="mode-pills">
+                <div class="mode-segment" role="tablist" aria-label="对话模式">
+                  <span class="mode-seg-item active" data-mode="ask" role="tab" aria-selected="true">科研问答</span>
+                  <span class="mode-seg-item" data-mode="deep" role="tab" aria-selected="false">深度研究</span>
+                </div>
+                <span class="mode-toggle" data-toggle="thinking" role="switch" aria-checked="false">
+                  <svg class="icon"><use href="#i-brain"/></svg>
+                  <span>思考</span>
+                </span>
+              </div>
+              <div class="input-actions">
+                <button class="icon-btn" aria-label="附件"><svg width="18" height="18"><use href="#i-paperclip"/></svg></button>
+                <button class="send-btn" aria-label="发送" disabled>
+                  <svg width="13" height="13"><use href="#i-arrow-up"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="suggestions">
+            <span class="sug deep">
+              <span class="sug-tag deep">深度思考</span>
+              <span class="sug-text">如何构建科学向量数据库</span>
+            </span>
+            <span class="sug web">
+              <span class="sug-tag web">联网思考</span>
+              <span class="sug-text">在量子隧穿及自旋同时模拟电子在封闭空间内的碰撞</span>
+            </span>
+            <span class="sug ask">
+              <span class="sug-tag ask">智能问答</span>
+              <span class="sug-text">如何解决 AlphaFold 等模型在预测本质无序蛋白(IDP)或动态构象变化(如别构效应)时的局限性?</span>
+            </span>
+            <span class="sug deep">
+              <span class="sug-tag deep">深度思考</span>
+              <span class="sug-text">从 Michaelis-Menten 出发，如何系统扩展到多底物竞争与别构调控的动力学模型?</span>
+            </span>
+            <span class="sug web">
+              <span class="sug-tag web">联网思考</span>
+              <span class="sug-text">检索近三年关于蛋白质-配体亲和力预测的最新基准与开源模型，并比较其优劣</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="expert-block">
+          <div class="section-eyebrow">Featured Agents<span class="cn">推荐智能体</span></div>
+          <div class="expert-grid">
+            <div class="expert-card">
+              <div class="expert-title">
+                <svg class="icon"><use href="#i-flask"/></svg>
+                <span>自动化实验</span>
+              </div>
+              <div class="expert-desc">一站式端到端算法工坊，实现 AI+X 领域全周期科研流程自动化</div>
+            </div>
+            <div class="expert-card">
+              <div class="expert-title">
+                <svg class="icon"><use href="#i-dna"/></svg>
+                <span>蛋白质检索引擎 VenusPod</span>
+              </div>
+              <div class="expert-desc">基于深度学习的蛋白质语言模型，支持序列与结构的多模态检索</div>
+            </div>
+            <div class="expert-card">
+              <div class="expert-title">
+                <svg class="icon"><use href="#i-clipboard"/></svg>
+                <span>虚拟疾病生物学家</span>
+              </div>
+              <div class="expert-desc">模拟疾病机制、筛选靶点，助力新药研发与精准治疗</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SCP 广场 ─────────────────────────────────── -->
+    <section class="page scp-page" id="page-scp">
+      <div class="scp-inner">
+        <header class="scp-head">
+          <div class="eyebrow">SCIENCE COMMUNITY PROTOCOL</div>
+          <h1 class="scp-title">SCP 广场</h1>
+          <p class="scp-sub">兼容 MCP，汇聚科研工具，打造开放创新场</p>
+        </header>
+
+        <div class="banner-grid">
+          <div class="banner banner-1">
+            <div class="banner-tags">
+              <span class="banner-chip">生命科学</span>
+              <span class="banner-chip">科学实验流程自动化</span>
+            </div>
+            <div class="banner-content">
+              <div class="banner-name">Thoth<span class="cn">湿实验智能编排</span></div>
+            </div>
+          </div>
+          <div class="banner banner-2">
+            <div class="banner-tags">
+              <span class="banner-chip">生命科学</span>
+              <span class="banner-chip">蛋白质工程</span>
+            </div>
+            <div class="banner-content">
+              <div class="banner-name">VenusFactory<span class="cn">蛋白质工程 AI 全流程工具</span></div>
+            </div>
+          </div>
+          <div class="banner banner-3">
+            <div class="banner-tags">
+              <span class="banner-chip">生命科学</span>
+              <span class="banner-chip">药物研发</span>
+            </div>
+            <div class="banner-content">
+              <div class="banner-name">DrugSDA-Model<span class="cn">智能药物研发工具</span></div>
+            </div>
+          </div>
+          <div class="banner banner-4">
+            <div class="banner-tags">
+              <span class="banner-chip">跨学科</span>
+              <span class="banner-chip">DeepResearch</span>
+            </div>
+            <div class="banner-content">
+              <div class="banner-name">InternAgent<span class="cn">DeepResearch 科研报告生成</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <div class="tab active">Skills Hub</div>
+          <div class="tab">SCP Hub</div>
+        </div>
+
+        <div class="filter-row" data-row="domain">
+          <span class="filter-label">领域</span>
+          <button class="chip active">全部领域</button>
+          <button class="chip"><svg class="icon"><use href="#i-grid"/></svg>跨学科</button>
+          <button class="chip"><svg class="icon"><use href="#i-dna"/></svg>生命科学</button>
+          <button class="chip"><svg class="icon"><use href="#i-brain"/></svg>神经科学</button>
+          <button class="chip"><svg class="icon"><use href="#i-flask"/></svg>化学</button>
+          <button class="chip"><svg class="icon"><use href="#i-sparkle"/></svg>天文</button>
+          <button class="chip"><svg class="icon"><use href="#i-database"/></svg>地球科学</button>
+          <button class="chip"><svg class="icon"><use href="#i-grid"/></svg>材料</button>
+          <button class="chip"><svg class="icon"><use href="#i-library"/></svg>数学</button>
+          <button class="chip"><svg class="icon"><use href="#i-flask"/></svg>物理</button>
+          <button class="chip">其他</button>
+        </div>
+
+        <div class="filter-row" data-row="type">
+          <span class="filter-label">类型</span>
+          <button class="chip active">全部类型</button>
+          <button class="chip">搜索工具</button>
+          <button class="chip">数据处理工具</button>
+          <button class="chip">湿实验设备</button>
+          <button class="chip">浏览器工具</button>
+          <button class="chip">数据库</button>
+        </div>
+
+        <div class="search-row">
+          <span class="meta-label">全部</span>
+          <span class="meta-text">已接入 <strong>200</strong> 个科学领域 Skills，下载后可在本地 OpenCloaw 中使用</span>
+          <div class="search-input">
+            <svg class="icon"><use href="#i-search"/></svg>
+            <input type="text" placeholder="搜索 skills 名称、描述、领域标签…" />
+          </div>
+        </div>
+
+        <div class="skill-grid" id="skillGrid"></div>
+      </div>
+    </section>
+
+    <!-- ── 论文空间 ─────────────────────────────────── -->
+    <section class="page scp-page" id="page-papers">
+      <div class="scp-inner">
+        <header class="scp-head">
+          <div class="eyebrow">PAPERS WORKSPACE</div>
+          <h1 class="scp-title">论文空间</h1>
+          <p class="scp-sub">管理你的论文集合、阅读笔记与跨文献的研究线索</p>
+        </header>
+        <div class="ph-toolbar">
+          <span class="filter-label">视图</span>
+          <button class="chip active">全部</button>
+          <button class="chip">在读</button>
+          <button class="chip">已收藏</button>
+          <button class="chip">带笔记</button>
+          <div class="ph-search">
+            <svg class="icon"><use href="#i-search"/></svg>
+            <input type="text" placeholder="搜索论文标题、作者…" />
+          </div>
+        </div>
+        <div class="ph-grid">
+          <article class="ph-card">
+            <span class="ph-tag">2024 · Nature</span>
+            <div class="ph-title">Highly accurate protein structure prediction with AlphaFold</div>
+            <p class="ph-desc">Jumper J. et al. — 综述了基于深度学习的蛋白质三维结构预测方法及其与 PDB 的对接策略。</p>
+            <div class="ph-meta">
+              <span class="stat"><svg class="icon"><use href="#i-doc"/></svg>34 页</span>
+              <span class="date"><svg class="icon"><use href="#i-clock"/></svg>2024-08-12</span>
+            </div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">2023 · Cell</span>
+            <div class="ph-title">单细胞转录组的多模态联合分析</div>
+            <p class="ph-desc">提出跨平台批次校正与潜空间对齐方案，验证于 4 种组织的 12 万级单细胞数据集。</p>
+            <div class="ph-meta">
+              <span class="stat"><svg class="icon"><use href="#i-doc"/></svg>22 页</span>
+              <span class="date"><svg class="icon"><use href="#i-clock"/></svg>2024-07-30</span>
+            </div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">2024 · Science</span>
+            <div class="ph-title">Diffusion-based de novo enzyme design</div>
+            <p class="ph-desc">基于扩散模型生成酶活性中心骨架，并通过湿实验验证 7 种新酶的催化活性。</p>
+            <div class="ph-meta">
+              <span class="stat"><svg class="icon"><use href="#i-doc"/></svg>18 页</span>
+              <span class="date"><svg class="icon"><use href="#i-clock"/></svg>2024-06-04</span>
+            </div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">Preprint · bioRxiv</span>
+            <div class="ph-title">蛋白质语言模型在低资源酶家族上的迁移学习</div>
+            <p class="ph-desc">仅使用 200 条标注序列，在 5 个新酶家族上达到 SOTA 的功能注释精度。</p>
+            <div class="ph-meta">
+              <span class="stat"><svg class="icon"><use href="#i-doc"/></svg>14 页</span>
+              <span class="date"><svg class="icon"><use href="#i-clock"/></svg>2024-05-21</span>
+            </div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">2023 · Nature Methods</span>
+            <div class="ph-title">空间转录组与代谢组的联合可视化框架</div>
+            <p class="ph-desc">实现像素级空间多组学对齐，并为肿瘤微环境的代谢异质性提供可解释推断。</p>
+            <div class="ph-meta">
+              <span class="stat"><svg class="icon"><use href="#i-doc"/></svg>16 页</span>
+              <span class="date"><svg class="icon"><use href="#i-clock"/></svg>2024-04-18</span>
+            </div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">2022 · Nature</span>
+            <div class="ph-title">Cryo-EM resolves dynamic conformations of GPCRs</div>
+            <p class="ph-desc">通过时间分辨冷冻电镜，解析 GPCR 与下游效应器结合的多个中间构象。</p>
+            <div class="ph-meta">
+              <span class="stat"><svg class="icon"><use href="#i-doc"/></svg>28 页</span>
+              <span class="date"><svg class="icon"><use href="#i-clock"/></svg>2024-03-09</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 课题 ─────────────────────────────────── -->
+    <section class="page scp-page" id="page-kb">
+      <div class="scp-inner">
+        <header class="scp-head">
+          <div class="eyebrow">RESEARCH TOPICS</div>
+          <h1 class="scp-title">课题</h1>
+          <p class="scp-sub">个人与团队共享的研究课题与知识沉淀，可被对话直接引用</p>
+        </header>
+        <div class="ph-toolbar">
+          <span class="filter-label">分类</span>
+          <button class="chip active">全部</button>
+          <button class="chip">实验方法</button>
+          <button class="chip">数据规范</button>
+          <button class="chip">小组笔记</button>
+          <button class="chip">阅读综述</button>
+        </div>
+        <div class="ph-grid">
+          <article class="ph-card">
+            <span class="ph-tag">METHOD · 实验方法</span>
+            <div class="ph-title">蛋白质纯化标准操作流程</div>
+            <p class="ph-desc">From cell lysis to FPLC，含 8 步骤详细记录、缓冲液配方与典型故障排查。</p>
+            <div class="ph-meta"><span class="stat">12 篇笔记</span><span class="date">更新 2 天前</span></div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">DATA · 数据规范</span>
+            <div class="ph-title">实验室数据命名与存储约定</div>
+            <p class="ph-desc">统一项目代码、批次号与原始数据归档目录，支持 LIMS / ELN 索引。</p>
+            <div class="ph-meta"><span class="stat">4 篇笔记</span><span class="date">更新 1 周前</span></div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">REVIEW · 阅读综述</span>
+            <div class="ph-title">蛋白质语言模型综述（2023-2024）</div>
+            <p class="ph-desc">汇总 ESM、ProGen、SaProt 等模型的能力边界、训练语料与下游任务表现。</p>
+            <div class="ph-meta"><span class="stat">9 篇笔记</span><span class="date">更新 3 天前</span></div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">NOTE · 小组笔记</span>
+            <div class="ph-title">每周文献研讨纪要</div>
+            <p class="ph-desc">小组每周三的文献分享要点与讨论，按月份归档，便于新成员快速检索。</p>
+            <div class="ph-meta"><span class="stat">26 篇笔记</span><span class="date">更新 今天</span></div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">METHOD · 实验方法</span>
+            <div class="ph-title">CRISPR-Cas9 基因敲除流程</div>
+            <p class="ph-desc">sgRNA 设计、电转参数、克隆筛选与基因型验证全流程，附常见失败案例。</p>
+            <div class="ph-meta"><span class="stat">7 篇笔记</span><span class="date">更新 2 周前</span></div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">REVIEW · 阅读综述</span>
+            <div class="ph-title">单细胞多组学整合方法对比</div>
+            <p class="ph-desc">对 Seurat、Harmony、scVI 等主流框架在 5 类任务上的优劣分析与适用场景。</p>
+            <div class="ph-meta"><span class="stat">5 篇笔记</span><span class="date">更新 4 天前</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 科学数据 ─────────────────────────────────── -->
+    <section class="page scp-page" id="page-data">
+      <div class="scp-inner">
+        <header class="scp-head">
+          <div class="eyebrow">SCIENCE DATA</div>
+          <h1 class="scp-title">科学数据</h1>
+          <p class="scp-sub">汇集公开科学数据集与团队私有数据资产，按访问权限分级管理</p>
+        </header>
+        <div class="ph-toolbar">
+          <span class="filter-label">来源</span>
+          <button class="chip active">全部</button>
+          <button class="chip">公开数据集</button>
+          <button class="chip">实验室私有</button>
+          <button class="chip">外部合作</button>
+        </div>
+        <div class="ph-grid">
+          <article class="ph-card">
+            <span class="ph-tag">PUBLIC · 蛋白质结构</span>
+            <div class="ph-title">PDB · Protein Data Bank</div>
+            <p class="ph-desc">已镜像 21.4 万条蛋白质结构，支持结构相似检索、配体绑定位点查询。</p>
+            <div class="ph-meta"><span class="stat">214,000 条</span><span class="date">同步 1 小时前</span></div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">PUBLIC · 单细胞</span>
+            <div class="ph-title">Human Cell Atlas</div>
+            <p class="ph-desc">人类细胞图谱核心数据子集，覆盖 30 个组织、120 万级单细胞表达数据。</p>
+            <div class="ph-meta"><span class="stat">1.2 M 细胞</span><span class="date">同步 1 天前</span></div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">PRIVATE · 实验室</span>
+            <div class="ph-title">2024 蛋白质工程批次实验</div>
+            <p class="ph-desc">12 轮定向进化产物的 SDS-PAGE / 活性测定 / 序列结果，含原始仪器数据。</p>
+            <div class="ph-meta"><span class="stat">3.4 GB</span><span class="date">更新 2 天前</span></div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">PUBLIC · 基因组</span>
+            <div class="ph-title">UK Biobank · 子集</div>
+            <p class="ph-desc">UKB 公开子集，可用于多基因风险评分研究与全基因组关联分析复现。</p>
+            <div class="ph-meta"><span class="stat">48 万样本</span><span class="date">同步 3 天前</span></div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">PARTNER · 合作</span>
+            <div class="ph-title">医院 RNA-seq 合作队列</div>
+            <p class="ph-desc">2,300 例肿瘤患者的转录组数据，含临床预后注释，访问需 IRB 授权。</p>
+            <div class="ph-meta"><span class="stat">2,300 例</span><span class="date">更新 1 周前</span></div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">PRIVATE · 实验室</span>
+            <div class="ph-title">显微影像数据集 2024 Q2</div>
+            <p class="ph-desc">活细胞共聚焦显微镜延时成像，含细胞分裂事件标注，支持深度学习训练。</p>
+            <div class="ph-meta"><span class="stat">128 GB</span><span class="date">更新 5 天前</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 工作台 ─────────────────────────────────── -->
+    <section class="page scp-page" id="page-workbench">
+      <div class="scp-inner">
+        <header class="scp-head">
+          <div class="eyebrow">WORKBENCH</div>
+          <h1 class="scp-title">工作台</h1>
+          <p class="scp-sub">追踪正在进行的实验、任务与代码工作流，统一查看运行状态</p>
+        </header>
+        <div class="ph-toolbar">
+          <span class="filter-label">状态</span>
+          <button class="chip active">全部</button>
+          <button class="chip">运行中</button>
+          <button class="chip">已完成</button>
+          <button class="chip">已暂停</button>
+          <button class="chip">异常</button>
+        </div>
+        <div class="ph-grid">
+          <article class="ph-card">
+            <span class="ph-tag">RUNNING · 实验</span>
+            <div class="ph-title">蛋白质定向进化 第 7 轮筛选</div>
+            <p class="ph-desc">96 孔板高通量筛选进行中，已完成 38 / 96 孔，预计今晚 22:00 全部读板。</p>
+            <div class="ph-meta"><span class="stat">进度 39%</span><span class="date">启动 4 小时前</span></div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">RUNNING · 计算</span>
+            <div class="ph-title">AlphaFold 多体复合物预测</div>
+            <p class="ph-desc">12 条候选复合物正在 8×A100 上排队推理，第 5 条已完成置信度评估。</p>
+            <div class="ph-meta"><span class="stat">5 / 12 任务</span><span class="date">启动 2 小时前</span></div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">DONE · 数据处理</span>
+            <div class="ph-title">RNA-seq 差异表达分析</div>
+            <p class="ph-desc">已生成 DEG 列表与 GSEA 富集结果，下一步：与 ChIP-seq 数据进行交叉分析。</p>
+            <div class="ph-meta"><span class="stat">完成</span><span class="date">2 天前</span></div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">PAUSED · 模型</span>
+            <div class="ph-title">单细胞分类模型训练</div>
+            <p class="ph-desc">在第 14 个 epoch 暂停，验证集 F1 已达 0.91，等待新一批标注后恢复。</p>
+            <div class="ph-meta"><span class="stat">14 / 30 epoch</span><span class="date">暂停 6 天前</span></div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">ERROR · 计算</span>
+            <div class="ph-title">分子动力学模拟 200 ns</div>
+            <p class="ph-desc">第 3 段轨迹因 GPU 节点掉线中断，已自动保存检查点，可一键续跑。</p>
+            <div class="ph-meta"><span class="stat">85% 已完成</span><span class="date">中断 11 小时前</span></div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">RUNNING · 智能体</span>
+            <div class="ph-title">DeepResearch · 文献综述</div>
+            <p class="ph-desc">InternAgent 正在汇总过去 5 年蛋白质语言模型的综述要点，预计 8 分钟完成。</p>
+            <div class="ph-meta"><span class="stat">进度 62%</span><span class="date">启动 3 分钟前</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 历史话题 ─────────────────────────────────── -->
+    <section class="page scp-page" id="page-history">
+      <div class="scp-inner">
+        <header class="scp-head">
+          <div class="eyebrow">CONVERSATION HISTORY</div>
+          <h1 class="scp-title">历史话题</h1>
+          <p class="scp-sub">所有对话历史，按时间分组检索与回溯</p>
+        </header>
+        <div class="ph-toolbar">
+          <span class="filter-label">时间</span>
+          <button class="chip active">全部</button>
+          <button class="chip">今天</button>
+          <button class="chip">本周</button>
+          <button class="chip">本月</button>
+          <button class="chip">更早</button>
+          <div class="ph-search">
+            <svg class="icon"><use href="#i-search"/></svg>
+            <input type="text" placeholder="搜索话题关键词…" />
+          </div>
+        </div>
+        <div class="ph-grid">
+          <article class="ph-card">
+            <span class="ph-tag">深度思考 · 今天</span>
+            <div class="ph-title">探讨酶促反应的动力学机制</div>
+            <p class="ph-desc">从 Michaelis-Menten 出发，逐步引入别构效应与多底物竞争场景的扩展。</p>
+            <div class="ph-meta"><span class="stat">14 轮对话</span><span class="date">10 分钟前</span></div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">智能问答 · 今天</span>
+            <div class="ph-title">高效液相色谱法和质谱分析</div>
+            <p class="ph-desc">比较 LC-MS / GC-MS 在代谢组学小分子鉴定中的灵敏度与基质效应差异。</p>
+            <div class="ph-meta"><span class="stat">8 轮对话</span><span class="date">2 小时前</span></div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">联网思考 · 本周</span>
+            <div class="ph-title">蛋白质折叠状态的控制</div>
+            <p class="ph-desc">围绕分子伴侣系统、热应激响应与体外复性条件展开多步推理。</p>
+            <div class="ph-meta"><span class="stat">21 轮对话</span><span class="date">3 天前</span></div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">深度思考 · 本周</span>
+            <div class="ph-title">研究结果如何影响现有理论？</div>
+            <p class="ph-desc">分析新数据对经典模型的支持/挑战，并提出可证伪的后续实验设计。</p>
+            <div class="ph-meta"><span class="stat">17 轮对话</span><span class="date">5 天前</span></div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">智能问答 · 本月</span>
+            <div class="ph-title">底物浓度、pH 值和温度</div>
+            <p class="ph-desc">三因素对酶活性影响的综合曲面建模，含响应面优化建议。</p>
+            <div class="ph-meta"><span class="stat">11 轮对话</span><span class="date">2 周前</span></div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">联网思考 · 本月</span>
+            <div class="ph-title">使用 50 个生物样本进行蛋白质表达分析</div>
+            <p class="ph-desc">从样本前处理到统计学校正的全链路讨论，重点关注假阳性控制。</p>
+            <div class="ph-meta"><span class="stat">19 轮对话</span><span class="date">3 周前</span></div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">深度思考 · 更早</span>
+            <div class="ph-title">方差分析和多元回归分析</div>
+            <p class="ph-desc">在多变量实验设计中如何选择合适的统计模型，并避免常见混淆变量。</p>
+            <div class="ph-meta"><span class="stat">9 轮对话</span><span class="date">5 周前</span></div>
+          </article>
+          <article class="ph-card">
+            <span class="ph-tag">深度思考 · 更早</span>
+            <div class="ph-title">探索蛋白质相互作用网络及其调控机制</div>
+            <p class="ph-desc">基于 PPI 数据库构建子网络，并结合表达数据推断关键调控节点。</p>
+            <div class="ph-meta"><span class="stat">13 轮对话</span><span class="date">7 周前</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="history-tip" id="historyTip" role="tooltip" aria-hidden="true"></div>
+
+<script>
+/* ── skills data ─────────────────────────────────────── */
+const skills = [
+  { name:"AlphaFold-Web",  certified:true,  domain:"生命科学",  type:"搜索工具",   extra:2, desc:"基于深度学习的蛋白质三维结构预测工具，支持高精度单链与复合物建模，覆盖 95% 以上人类蛋白组，与 PDB 数据库实时同步。", author:"GoogleAI", downloads:"8.9k", date:"2022-12-15" },
+  { name:"PubMed Express", certified:false, domain:"生命科学",  type:"搜索工具",   extra:2, desc:"基于 NLP 的文献元数据增强检索引擎，支持引文图谱、影响力追踪与跨学科主题聚类，单次调用响应 < 200ms。",         author:"NLM",      downloads:"6.4k", date:"2023-04-08" },
+  { name:"NeuroSimX",      certified:true,  domain:"神经科学",  type:"数据处理工具", extra:1, desc:"大规模神经元仿真平台，支持 Hodgkin-Huxley 与 LIF 模型并行执行，可在 GPU 集群上扩展至 10⁷ 级神经元。",         author:"NeuroLab", downloads:"3.2k", date:"2024-01-22" },
+  { name:"ChemDraw·MCP",   certified:false, domain:"化学",     type:"浏览器工具",  extra:2, desc:"分子结构可视化与反应路径推断工具，兼容 SMILES / InChI / Mol2 等主流格式，支持反应动力学的对话式拆解。",          author:"PerkinE",  downloads:"5.7k", date:"2023-09-30" },
+  { name:"AstroQuery",     certified:true,  domain:"天文",     type:"数据库",     extra:2, desc:"统一访问 SDSS / Gaia / NASA ADS 等天文学公开数据库，提供异步并发查询与结果缓存能力。",                          author:"AstroPy",  downloads:"2.1k", date:"2024-03-11" },
+  { name:"GeoStack",       certified:false, domain:"地球科学",  type:"数据处理工具", extra:1, desc:"地理空间栅格 / 矢量数据并行处理框架，原生支持 Cloud Optimized GeoTIFF,可在云端进行 PB 级地表数据分析。",       author:"GeoLab",   downloads:"1.8k", date:"2024-06-04" },
+  { name:"MaterialsHub",   certified:true,  domain:"材料",     type:"数据库",     extra:2, desc:"涵盖 30 万种已合成材料的物性数据库，支持机器学习筛选、能带结构对比与逆向材料设计。",                       author:"MIT",      downloads:"4.5k", date:"2023-11-19" },
+  { name:"Symbolic-Math",  certified:false, domain:"数学",     type:"数据处理工具", extra:1, desc:"可微符号计算引擎，支持自动求导、符号积分与数值优化的混合工作流，与主流深度学习框架无缝集成。",                  author:"SciPy",    downloads:"3.9k", date:"2024-02-27" },
+  { name:"QPhys-Toolkit",  certified:true,  domain:"物理",     type:"数据处理工具", extra:2, desc:"量子哈密顿量构建与张量网络模拟工具，支持 GPU 加速的 DMRG 与 PEPS 算法，可处理 100 量子比特规模问题。",       author:"CalTech",  downloads:"2.6k", date:"2024-05-14" },
+  { name:"DryLab Browser", certified:false, domain:"跨学科",   type:"浏览器工具",  extra:2, desc:"统一访问公开实验记录、原始数据与同行评议的浏览器扩展，支持一键引用与跨平台批注同步。",                    author:"OpenSci",  downloads:"1.2k", date:"2024-07-02" },
+  { name:"VenusPod-Lite",  certified:true,  domain:"生命科学",  type:"搜索工具",   extra:2, desc:"VenusPod 蛋白质语义检索的轻量版本，10 ms 响应,支持本地部署与离线索引,适合科研团队的隐私场景。",            author:"InternAI", downloads:"7.3k", date:"2024-04-25" },
+  { name:"PipeRunner",     certified:false, domain:"跨学科",   type:"湿实验设备",  extra:1, desc:"自动化湿实验调度器，对接 OT-2 / Hamilton 等液体处理工作站,可与 LIMS 系统双向同步样品状态。",              author:"BioAuto",  downloads:"0.9k", date:"2024-08-18" }
+];
+
+const grid = document.getElementById('skillGrid');
+grid.innerHTML = skills.map(s => `
+  <div class="skill-card">
+    <div class="skill-card-head">
+      <div class="skill-name">${s.name}</div>
+      ${s.certified ? `<span class="cert-badge"><svg class="icon"><use href="#i-check-circle"/></svg>已认证</span>` : ``}
+    </div>
+    <div class="skill-tags">
+      <span class="skill-tag"><svg class="icon"><use href="#i-dna"/></svg>${s.domain}</span>
+      <span class="skill-tag custom">自定义标签</span>
+      ${s.extra ? `<span class="skill-tag more">+${s.extra}</span>` : ``}
+    </div>
+    <div class="skill-desc">${s.desc}</div>
+    <div class="skill-foot">
+      <span class="author"><span class="a-avatar">${s.author[0]}</span>${s.author}</span>
+      <span class="stat"><svg class="icon"><use href="#i-download"/></svg>${s.downloads}</span>
+      <span class="date"><svg class="icon"><use href="#i-clock"/></svg>${s.date}</span>
+    </div>
+  </div>
+`).join('');
+
+/* ── interactivity ───────────────────────────────────── */
+const app = document.getElementById('app');
+const toggleBtn = document.getElementById('toggleBtn');
+
+function setCollapsed(state){
+  app.dataset.collapsed = state ? 'true' : 'false';
+}
+toggleBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  setCollapsed(app.dataset.collapsed !== 'true');
+});
+
+function showPage(key){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + key);
+  if (target) target.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const page = item.dataset.page;
+    if (!page) return;
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    item.classList.add('active');
+    showPage(page);
+  });
+});
+
+// "查看全部" lives inside .nav-history (sibling to nav-item) — wire it explicitly
+const viewAllBtn = document.querySelector('.history-item.view-all');
+const navHistory = document.getElementById('navHistory');
+if (viewAllBtn && navHistory){
+  viewAllBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    navHistory.classList.add('active');
+    showPage('history');
+  });
+}
+
+// Hover popover for history items showing the full prompt
+const histTip = document.getElementById('historyTip');
+if (histTip){
+  document.querySelectorAll('.history-item:not(.view-all)').forEach(item => {
+    item.addEventListener('mouseenter', () => {
+      const full = item.dataset.full;
+      if (!full) return;
+      histTip.textContent = full;
+      const rect = item.getBoundingClientRect();
+      histTip.style.left = (rect.right + 14) + 'px';
+      histTip.style.top  = (rect.top + rect.height/2) + 'px';
+      histTip.classList.add('show');
+    });
+    item.addEventListener('mouseleave', () => histTip.classList.remove('show'));
+  });
+}
+
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+  });
+});
+
+document.querySelectorAll('.filter-row').forEach(row => {
+  row.addEventListener('click', e => {
+    if (!e.target.classList.contains('chip')) return;
+    row.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    e.target.classList.add('active');
+  });
+});
+
+// 科研问答 / 深度研究 互斥分段
+document.querySelectorAll('.mode-segment').forEach(seg => {
+  seg.querySelectorAll('.mode-seg-item').forEach(item => {
+    item.addEventListener('click', () => {
+      seg.querySelectorAll('.mode-seg-item').forEach(x => {
+        x.classList.remove('active');
+        x.setAttribute('aria-selected','false');
+      });
+      item.classList.add('active');
+      item.setAttribute('aria-selected','true');
+    });
+  });
+});
+// 思考 — 独立开关
+document.querySelectorAll('.mode-toggle').forEach(t => {
+  t.addEventListener('click', () => {
+    const next = !t.classList.contains('active');
+    t.classList.toggle('active', next);
+    t.setAttribute('aria-checked', String(next));
+  });
+});
+
+// Send button — 输入框非空才启用
+document.querySelectorAll('.input-wrap').forEach(wrap => {
+  const ta = wrap.querySelector('textarea');
+  const btn = wrap.querySelector('.send-btn');
+  if (!ta || !btn) return;
+  const sync = () => { btn.disabled = ta.value.trim().length === 0; };
+  ta.addEventListener('input', sync);
+  sync();
+});
+
+// Suggestions — 点击填充输入框，并联动发送按钮启用态
+document.querySelectorAll('.suggestions .sug').forEach(sug => {
+  sug.addEventListener('click', () => {
+    const textNode = sug.querySelector('span:not(.sug-tag)');
+    const text = (textNode ? textNode.textContent : sug.textContent).trim();
+    const page = sug.closest('.chat-page') || document;
+    const ta = page.querySelector('.input-wrap textarea');
+    if (!ta) return;
+    ta.value = text;
+    ta.focus();
+    ta.dispatchEvent(new Event('input', { bubbles:true }));
+  });
+});
+
+/* Chat-page background — 3 dot-art scenes (空间 / 图书馆 / 实验室)
+ * Aesthetic mirrors Figma reference (xzCdG3OdIjTPOT1CzXJwnn) :
+ * fine grid of tiny dots forming filled geometric shapes (hexagrams / squares / hexagons). */
+(function buildChatBg(){
+  const svg = document.querySelector('.chat-bg > svg');
+  if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const DOT = 1, RX = 0.4, STEP = 4;
+  const snap = v => Math.round(v/STEP)*STEP;
+  const mkRect = (x, y) => {
+    const r = document.createElementNS(NS, 'rect');
+    r.setAttribute('x', (x - DOT/2).toFixed(2));
+    r.setAttribute('y', (y - DOT/2).toFixed(2));
+    r.setAttribute('width', DOT); r.setAttribute('height', DOT);
+    r.setAttribute('rx', RX); r.setAttribute('ry', RX);
+    return r;
+  };
+  const mkGroup = (cls, dots, filterId) => {
+    const g = document.createElementNS(NS, 'g');
+    g.setAttribute('class', cls);
+    if (filterId) g.setAttribute('filter', `url(#${filterId})`);
+    dots.forEach(([x,y]) => g.appendChild(mkRect(x,y)));
+    return g;
+  };
+  // Build SVG filter with animated displacement scale (per-pixel rearrangement)
+  const mkFilter = (id, beginDelay, seed) => {
+    const f = document.createElementNS(NS, 'filter');
+    f.setAttribute('id', id);
+    f.setAttribute('x', '-5%'); f.setAttribute('y', '-5%');
+    f.setAttribute('width', '110%'); f.setAttribute('height', '110%');
+    const turb = document.createElementNS(NS, 'feTurbulence');
+    turb.setAttribute('type', 'fractalNoise');
+    turb.setAttribute('baseFrequency', '0.55');
+    turb.setAttribute('numOctaves', '2');
+    turb.setAttribute('seed', String(seed));
+    turb.setAttribute('stitchTiles', 'stitch');
+    turb.setAttribute('result', 'n');
+    f.appendChild(turb);
+    const disp = document.createElementNS(NS, 'feDisplacementMap');
+    disp.setAttribute('in', 'SourceGraphic');
+    disp.setAttribute('in2', 'n');
+    disp.setAttribute('xChannelSelector', 'R');
+    disp.setAttribute('yChannelSelector', 'G');
+    disp.setAttribute('scale', '0');
+    const anim = document.createElementNS(NS, 'animate');
+    anim.setAttribute('attributeName', 'scale');
+    anim.setAttribute('begin', `${beginDelay}s`);
+    anim.setAttribute('dur', '60s');
+    anim.setAttribute('repeatCount', 'indefinite');
+    anim.setAttribute('keyTimes', '0;0.04;0.30;0.34;1');
+    anim.setAttribute('values', '24;0;0;24;24');
+    disp.appendChild(anim);
+    f.appendChild(disp);
+    return f;
+  };
+  const newSet = () => {
+    const s = new Set();
+    return { add(arr, x, y){
+      x = snap(x); y = snap(y);
+      if (x < -10 || x > 1010 || y < -10 || y > 510) return;
+      const k = x + ',' + y;
+      if (!s.has(k)){ s.add(k); arr.push([x,y]); }
+    }};
+  };
+
+  /* ── shape primitives (filled by point-in-polygon) ── */
+  function pip(x, y, pts){
+    let inside = false;
+    for (let i=0, j=pts.length-1; i<pts.length; j=i++){
+      const xi=pts[i][0], yi=pts[i][1], xj=pts[j][0], yj=pts[j][1];
+      if (((yi>y) !== (yj>y)) && (x < (xj-xi)*(y-yi)/(yj-yi) + xi)) inside = !inside;
+    }
+    return inside;
+  }
+  function fillPoly(P, arr, pts){
+    let minX=Infinity, maxX=-Infinity, minY=Infinity, maxY=-Infinity;
+    pts.forEach(([x,y]) => {
+      if (x<minX)minX=x; if (x>maxX)maxX=x;
+      if (y<minY)minY=y; if (y>maxY)maxY=y;
+    });
+    for (let y=minY; y<=maxY; y+=STEP){
+      for (let x=minX; x<=maxX; x+=STEP){
+        if (pip(x, y, pts)) P.add(arr, x, y);
+      }
+    }
+  }
+  // Hexagram (Star of David) — two overlapping equilateral triangles
+  function hexStarFill(P, arr, cx, cy, R){
+    const a0 = -Math.PI/2;
+    const t1 = [], t2 = [];
+    for (let i=0; i<3; i++){
+      const a = a0 + i*2*Math.PI/3;
+      t1.push([cx + R*Math.cos(a), cy + R*Math.sin(a)]);
+    }
+    for (let i=0; i<3; i++){
+      const a = a0 + Math.PI + i*2*Math.PI/3;
+      t2.push([cx + R*Math.cos(a), cy + R*Math.sin(a)]);
+    }
+    for (let y=cy-R; y<=cy+R; y+=STEP){
+      for (let x=cx-R; x<=cx+R; x+=STEP){
+        if (pip(x,y,t1) || pip(x,y,t2)) P.add(arr, x, y);
+      }
+    }
+  }
+  // Ring (annular) — filled donut region
+  function ringFill(P, arr, cx, cy, rIn, rOut){
+    for (let y=cy-rOut; y<=cy+rOut; y+=STEP){
+      for (let x=cx-rOut; x<=cx+rOut; x+=STEP){
+        const d = Math.hypot(x-cx, y-cy);
+        if (d >= rIn && d <= rOut) P.add(arr, x, y);
+      }
+    }
+  }
+  // Hollow rectangle frame (outline thickness `t`)
+  function rectFrame(P, arr, x, y, w, h, t){
+    t = (t == null) ? STEP*3 : t;
+    for (let yy=y; yy<=y+h; yy+=STEP){
+      for (let xx=x; xx<=x+w; xx+=STEP){
+        const inset = (xx > x + t) && (xx < x + w - t) && (yy > y + t) && (yy < y + h - t);
+        if (!inset) P.add(arr, xx, yy);
+      }
+    }
+  }
+  // Hollow hexagon frame
+  function hexagonFrame(P, arr, cx, cy, R, t){
+    t = (t == null) ? STEP*3 : t;
+    const outer = [], inner = [];
+    for (let i=0; i<6; i++){
+      const a = i*Math.PI/3;
+      outer.push([cx + R*Math.cos(a),       cy + R*Math.sin(a)]);
+      inner.push([cx + (R-t)*Math.cos(a),   cy + (R-t)*Math.sin(a)]);
+    }
+    for (let y=cy-R; y<=cy+R; y+=STEP){
+      for (let x=cx-R; x<=cx+R; x+=STEP){
+        if (pip(x,y,outer) && !pip(x,y,inner)) P.add(arr, x, y);
+      }
+    }
+  }
+  // Flask silhouette (Erlenmeyer with flat lid) — uses 48-unit reference SVG
+  // R = half-bounding-box; shape is centered at (cx, cy)
+  function flaskShape(R, cx, cy){
+    const s = R / 24;
+    const tr = (x, y) => [(x - 24) * s + cx, (y - 24) * s + cy];
+    return {
+      outer: [
+        tr(18.02, 4), tr(30.03, 4), tr(30.03, 15.04), tr(37.25, 30),
+        tr(41.7, 44),  tr(6.3, 44),  tr(10.78, 30), tr(18.02, 15.04)
+      ],
+      inner: [
+        tr(20.5, 7),  tr(27.5, 7),  tr(27.5, 14.5), tr(33, 27.5),
+        tr(37, 41),    tr(11, 41),   tr(15, 27.5),  tr(20.5, 14.5)
+      ],
+      lid:  [ tr(12, 2), tr(36, 2), tr(36, 6), tr(12, 6) ],
+      half: { w: 22 * s, h: 22 * s }
+    };
+  }
+  function flaskFill(P, arr, cx, cy, R){
+    const f = flaskShape(R, cx, cy);
+    fillPoly(P, arr, f.outer);
+    fillPoly(P, arr, f.lid);
+  }
+  function flaskFrame(P, arr, cx, cy, R){
+    const f = flaskShape(R, cx, cy);
+    for (let y = cy - f.half.h; y <= cy + f.half.h; y += STEP){
+      for (let x = cx - f.half.w; x <= cx + f.half.w; x += STEP){
+        if (pip(x, y, f.outer) && !pip(x, y, f.inner)) P.add(arr, x, y);
+      }
+    }
+    fillPoly(P, arr, f.lid);    // lid is a stroke in both variants
+  }
+  // Regular hexagon — flat-top orientation
+  function hexagonFill(P, arr, cx, cy, R){
+    const pts = [];
+    for (let i=0; i<6; i++){
+      const a = i*Math.PI/3;
+      pts.push([cx + R*Math.cos(a), cy + R*Math.sin(a)]);
+    }
+    fillPoly(P, arr, pts);
+  }
+  function rectFill(P, arr, x, y, w, h){
+    for (let yy=y; yy<=y+h; yy+=STEP)
+      for (let xx=x; xx<=x+w; xx+=STEP)
+        P.add(arr, xx, yy);
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────
+   *  1. 太空 ── 5×3 紧密排布的烧瓶轮廓（实心 / 空心交替）
+   * ───────────────────────────────────────────────────────────────────── */
+  const P1 = newSet(); const space = [];
+  {
+    const xs = [165, 335, 500, 665, 835];
+    const ys = [85, 250, 415];
+    const R = 70;
+    for (let r=0; r<3; r++){
+      for (let c=0; c<5; c++){
+        const cx = xs[c], cy = ys[r];
+        if ((r + c) % 2 === 0){
+          flaskFrame(P1, space, cx, cy, R);     // 空心烧瓶
+        } else {
+          flaskFill (P1, space, cx, cy, R);     // 实心烧瓶
+        }
+      }
+    }
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────
+   *  2. 图书馆 ── 4×5 矩形网格（实心 / 空心交替）
+   * ───────────────────────────────────────────────────────────────────── */
+  const P2 = newSet(); const library = [];
+  {
+    const cols = 5, rows = 4;
+    const cellW = 130, cellH = 60;
+    const gapX = 30, gapY = 30;
+    const totalW = cols*cellW + (cols-1)*gapX;
+    const offsetX = (1000 - totalW) / 2;
+    const offsetY = 30;
+    for (let r=0; r<rows; r++){
+      for (let c=0; c<cols; c++){
+        const x = offsetX + c*(cellW + gapX);
+        const y = offsetY + r*(cellH + gapY);
+        if ((r + c) % 2 === 0){
+          rectFill(P2, library, x, y, cellW, cellH);
+        } else {
+          rectFrame(P2, library, x, y, cellW, cellH, 12);
+        }
+      }
+    }
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────
+   *  3. 实验室 ── 蜂窝六边形（实心 / 空心交替）
+   * ───────────────────────────────────────────────────────────────────── */
+  const P3 = newSet(); const lab = [];
+  {
+    const HR = 58;
+    const hStep = HR * Math.sqrt(3);
+    const vStep = HR * 1.5;
+    const startY = 30;
+    for (let r=0; r<7; r++){
+      const cy = startY + r*vStep;
+      if (cy > 510) break;
+      const offset = (r % 2) * hStep/2;
+      for (let c=0; c<11; c++){
+        const cx = -50 + offset + c*hStep;
+        if (cx < -50 || cx > 1050) continue;
+        if ((r + c) % 2 === 0){
+          hexagonFill(P3, lab, cx, cy, HR - 8);
+        } else {
+          hexagonFrame(P3, lab, cx, cy, HR - 8, 12);
+        }
+      }
+    }
+  }
+
+  const defs = document.createElementNS(NS, 'defs');
+  defs.appendChild(mkFilter('jit-space',     0, 3));
+  defs.appendChild(mkFilter('jit-library', -40, 7));
+  defs.appendChild(mkFilter('jit-lab',     -20, 11));
+  svg.appendChild(defs);
+
+  svg.appendChild(mkGroup('t-space',   space,   'jit-space'));
+  svg.appendChild(mkGroup('t-library', library, 'jit-library'));
+  svg.appendChild(mkGroup('t-lab',     lab,     'jit-lab'));
+})();
+
+/* Theme switcher · 暖纸 / 浅色 / 深色 — popover-driven (v2.3) */
+(function(){
+  const root = document.documentElement;
+  const STORE_KEY = 'discoveryos-theme';
+  const ORDER = ['warm', 'cool', 'dark'];
+  const opts = document.querySelectorAll('.theme-opt');
+
+  function applyTheme(t){
+    if (!t || t === 'warm') root.removeAttribute('data-theme');
+    else root.setAttribute('data-theme', t);
+    const cur = t || 'warm';
+    opts.forEach(b => b.classList.toggle('active', b.dataset.themeSet === cur));
+  }
+
+  const stored = localStorage.getItem(STORE_KEY);
+  applyTheme(ORDER.includes(stored) ? stored : 'warm');
+
+  opts.forEach(b => {
+    b.addEventListener('click', () => {
+      const t = b.dataset.themeSet;
+      applyTheme(t);
+      localStorage.setItem(STORE_KEY, t);
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
